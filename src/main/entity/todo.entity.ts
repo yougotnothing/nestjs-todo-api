@@ -5,9 +5,9 @@ import { UserEntity } from "./user.entity";
 export class TodoEntity {
   @Column({ type: 'boolean', default: false })
   isChecked: boolean;
-  @Column()
+  @Column({ default: '' })
   content: string;
-  @Column()
+  @Column({ default: '' })
   header: string;
   @PrimaryGeneratedColumn()
   id: number;

@@ -16,6 +16,12 @@ export class UserEntity {
   @Column()
   password: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ default: false })
+  isHaveAvatar: boolean;
+
   @OneToMany(() => TodoEntity, todo => todo.user)
   tasks: TodoEntity[];
 

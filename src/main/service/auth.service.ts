@@ -54,7 +54,7 @@ export class AuthService {
       throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
     }
 
-    const TOKEN = Buffer.from(`${user.name}:${user.password}`).toString('base64');
+    const TOKEN = Buffer.from(`${user.name}:${password}`).toString('base64');
 
     return {
       message: "you have been loggined in!",
