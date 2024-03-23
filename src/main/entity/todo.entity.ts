@@ -9,6 +9,8 @@ export class TodoEntity {
   content: string;
   @Column({ default: '' })
   header: string;
+  @Column()
+  creator: string;
   @PrimaryGeneratedColumn()
   id: number;
   @ManyToOne(() => UserEntity, user => user.tasks)

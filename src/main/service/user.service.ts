@@ -35,9 +35,10 @@ export class UserService {
     }
   }
 
-  async getTasks(id: number): Promise<{ message: string, tasks: TodoEntity[] }> {
-    const user = await this.userRepository.findOneBy({ id });
-    const tasks = await this.todoRepository.findBy({ user: user });
+  async getTasks(username: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.findBy({ creator: username });
+
+    console.log('tasks: ', tasks);
 
     if(!tasks.length) {
       return {
@@ -52,10 +53,14 @@ export class UserService {
     }
   }
 
-  async addTask(task: TodoEntity): Promise<{ message: string }> {
+  async addTask(task: TodoEntity, username: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ name: username });
     const task_ = new TodoEntity();
-    task.content = task.content;
-    task.header = task.header;
+    
+    task_.content = task.content;
+    task_.header = task.header;
+    task_.creator = username;
+    task_.user = user;
 
     await this.todoRepository.save(task_);
 

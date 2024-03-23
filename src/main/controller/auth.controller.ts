@@ -1,8 +1,6 @@
-import { Body, Controller, HttpException, Post, Res } from "@nestjs/common";
-import { UserEntity } from "../entity/user.entity";
+import { Body, Controller, Header, HttpException, Post, Res } from "@nestjs/common";
 import { AuthService } from "../service/auth.service";
 import { RegisterDto } from "../types/register.dto";
-import { Response } from "express";
 
 @Controller('auth')
 export class AuthController {
@@ -16,10 +14,11 @@ export class AuthController {
   }
 
   @Post('/login')
-  async login(@Body() loginDto: { name: string, password: string }, @Res() response: Response) {
+  @Header('Access-Control-Allow-Origin', '*')
+  @Header('Access-Control-Allow-Headers', 'Content-Type')
+  async login(@Body() loginDto: { name: string, password: string }) {
     try {
       const resp = await this.authService.login(loginDto);
-      response.set('Authorization', `Basic ${resp.token}`).json(resp);
       return resp;
     }catch(error: any) {
       throw new HttpException(error.message, error.status);

@@ -9,6 +9,9 @@ import { AuthController } from './main/controller/auth.controller';
 import { ormconfig } from 'dbconfig';
 import { UserService } from './main/service/user.service';
 import { UserController } from './main/controller/user.controller';
+import { TasksService } from './main/service/tasks.service';
+import { TasksController } from './main/controller/tasks.controller';
+import { Auth } from './main/guard/auth.guard';
 
 @Module({
   imports: [
@@ -17,11 +20,18 @@ import { UserController } from './main/controller/user.controller';
     TypeOrmModule.forRoot(ormconfig),
     TypeOrmModule.forFeature([UserEntity, TodoEntity]),
   ],
-  controllers: [AppController, AuthController, UserController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    TasksController
+  ],
   providers: [
     AuthService,
     AppService,
     UserService,
+    TasksService,
+    Auth
   ]
 })
 export class AppModule {}
