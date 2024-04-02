@@ -21,10 +21,6 @@ export class AuthService {
     if(isUserCreated) {
       throw new HttpException("User already exists.", HttpStatus.BAD_REQUEST);
     }else{
-      if(user_dto.password !== user_dto.confirmPassword) {
-        throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
-      }
-      
       user.name = user_dto.name;
       user.email = user_dto.email;
       user.password = await bcrypt.hash(user_dto.password, 10);

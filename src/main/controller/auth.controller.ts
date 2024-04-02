@@ -1,4 +1,4 @@
-import { Body, Controller, Header, HttpException, Post, Res } from "@nestjs/common";
+import { Body, Controller, Header, HttpCode, HttpException, Post, Res } from "@nestjs/common";
 import { AuthService } from "../service/auth.service";
 import { RegisterDto } from "../types/register.dto";
 
@@ -9,11 +9,13 @@ export class AuthController {
   ) {}
 
   @Post('/register')
+  @HttpCode(200)
   async register(@Body() registerDto: RegisterDto) {
     return await this.authService.registration(registerDto);
   }
 
   @Post('/login')
+  @HttpCode(200)
   @Header('Access-Control-Allow-Origin', '*')
   @Header('Access-Control-Allow-Headers', 'Content-Type')
   async login(@Body() loginDto: { name: string, password: string }) {
