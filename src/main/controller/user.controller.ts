@@ -61,7 +61,10 @@ export class UserController {
     const token = req.headers['authorization'].split(' ')[1];
     const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
     const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
-    const isTokenValid = await user.comparePassword(encryptedToken[1]);
+    const token_ = encryptedToken[1];
+    const isTokenValid = await user.comparePassword(token_);
+
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
 
     if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 

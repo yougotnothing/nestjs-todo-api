@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TodoEntity } from "../entity/todo.entity";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 
 @Injectable()
 export class TasksService {
@@ -39,8 +39,8 @@ export class TasksService {
     }
   }
 
-  async changeHeader(id: number, header: string): Promise<{ message: string }> {
-    const task = await this.todoRepository.findOneBy({ id });
+  async changeHeader(body: { id: number, header: string }): Promise<{ message: string }> {
+    const task = await this.todoRepository.findOneBy({ id: body.id });
 
     if(!task) {
       return {
@@ -48,19 +48,19 @@ export class TasksService {
       }
     }
 
-    if(header === task.header) {
+    if(body.header === task.header) {
       return {
         message: "header is same."
       }
     }
 
-    if(header.length < 1) {
+    if(body.header.length < 1) {
       return {
         message: "header is empty."
       }
     }
 
-    task.header = header;
+    task.header = body.header;
     await this.todoRepository.save(task);
 
     return {
@@ -68,8 +68,8 @@ export class TasksService {
     }
   }
 
-  async changeContent(id: number, content: string): Promise<{ message: string }> {
-    const task = await this.todoRepository.findOneBy({ id });
+  async changeContent(body: { id: number, content: string }): Promise<{ message: string }> {
+    const task = await this.todoRepository.findOneBy({ id: body.id });
 
     if(!task) {
       return {
@@ -77,23 +77,39 @@ export class TasksService {
       }
     }
 
-    if(content === task.content) {
+    if(body.content === task.content) {
       return {
         message: "header is same."
       }
     }
 
-    if(content.length < 1) {
+    if(body.content.length < 1) {
       return {
         message: "header is empty."
       }
     }
     
-    task.content = content;
+    task.content = body.content;
     await this.todoRepository.save(task);
 
     return {
       message: "content changed."
+    }
+  }
+
+  async searchTasks(substring: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.find({ where: { content: Like(`%${substring}%`) } });
+
+    if(!tasks.length) {
+      return {
+        message: "user has no tasks.",
+        tasks: []
+      }
+    }
+
+    return {
+      message: `tasks by substring ${substring}:`,
+      tasks: tasks
     }
   }
 }

@@ -1,10 +1,9 @@
-import { HttpCode, HttpException, HttpStatus, Injectable, Response } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Response } from "@nestjs/common";
 import { UserEntity } from "../entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { RegisterDto } from "../types/register.dto";
-import { response } from "express";
 
 @Injectable()
 export class AuthService {
@@ -21,6 +20,14 @@ export class AuthService {
     if(isUserCreated) {
       throw new HttpException("User already exists.", HttpStatus.BAD_REQUEST);
     }else{
+      if(user_dto.password.length > 8) {
+        throw new HttpException("Password must be less than 8 characters.", 440);
+      }
+
+      if(user_dto.name.length > 3) {
+        throw new HttpException("Name must be less than 3 characters.", 441);
+      }
+
       user.name = user_dto.name;
       user.email = user_dto.email;
       user.password = await bcrypt.hash(user_dto.password, 10);
@@ -36,12 +43,21 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: { name: string, password: string }): Promise<{ message: string, token: string }> {
-    const { name, password } = loginDto;
-    const user = await this.userRepository.findOneBy({ name });
+  async login(loginDto: { login: string, password: string }): Promise<{ message: string, token: string }> {
+    const { login, password } = loginDto;
+    const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    let user: UserEntity;
+    
+    if(!regex.test(login)) {
+      user = await this.userRepository.findOneBy({ name: login });
+    }else user = await this.userRepository.findOneBy({ email: login });
 
     if(!user) {
       throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+    }
+
+    if(password.length > 8) {
+      throw new HttpException("Password must be less than 8 characters.", 440);
     }
 
     const isMatching: boolean = await user.comparePassword(password);
