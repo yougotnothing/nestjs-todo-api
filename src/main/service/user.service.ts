@@ -1,8 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "../entity/user.entity";
 import { Repository } from "typeorm";
 import { TodoEntity } from "../entity/todo.entity";
+import { PublicUserDto } from "../types/public.user.dto";
 
 @Injectable()
 export class UserService {
@@ -85,6 +86,26 @@ export class UserService {
 
     return {
       message: "task deleted."
+    }
+  }
+
+  async getUser(token: string): Promise<{ message: string, user: PublicUserDto }> {
+    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
+    const name = encryptedToken[0];
+    const user = await this.userRepository.findOneBy({ name });
+    const isTokenValid = await user.comparePassword(encryptedToken[1]);
+    
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+
+    return {
+      message: "user found.",
+      user: {
+        isHaveAvatar: user.isHaveAvatar,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+      }
     }
   }
 }

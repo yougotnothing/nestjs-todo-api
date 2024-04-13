@@ -3,7 +3,7 @@ import { UserEntity } from "./user.entity";
 
 @Entity()
 export class TodoEntity {
-  @Column({ type: "enum", enum: ["school", "work", "shop", "read", "workout"] })
+  @Column({ type: "enum", enum: ["school", "work", "shop", "read", "work out"] })
   type: "school" | "work" | "shop" | "read" | "workout";
   @Column({ type: 'boolean', default: false })
   isChecked: boolean;

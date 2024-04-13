@@ -70,4 +70,10 @@ export class UserController {
 
     return await this.userService.getTasks(encryptedToken[0]);
   }
+
+  @Get('/get-user')
+  @HttpCode(200)
+  async getUser(@Req() req: Request) {
+    return await this.userService.getUser(req.headers['authorization'].split(' ')[1]);
+  }
 }
