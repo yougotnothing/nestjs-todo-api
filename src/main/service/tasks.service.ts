@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TodoEntity } from "../entity/todo.entity";
 import { Like, Repository } from "typeorm";
+import { TodoType } from "../types/todo.type";
 
 @Injectable()
 export class TasksService {
@@ -109,6 +110,22 @@ export class TasksService {
 
     return {
       message: `tasks by substring ${substring}:`,
+      tasks: tasks
+    }
+  }
+
+  async getTasksByType(type: TodoType): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.find({ where: { type } });
+
+    if(!tasks.length) {
+      return {
+        message: `user has no tasks of type ${type}.`,
+        tasks: []
+      }
+    }
+
+    return {
+      message: `tasks by type ${type}:`,
       tasks: tasks
     }
   }

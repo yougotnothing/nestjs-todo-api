@@ -4,7 +4,7 @@ import { UserEntity } from "./user.entity";
 @Entity()
 export class TodoEntity {
   @Column({ type: "enum", enum: ["school", "work", "shop", "read", "work out"] })
-  type: "school" | "work" | "shop" | "read" | "workout";
+  type: "school" | "work" | "shop" | "read" | "work out";
   @Column({ type: 'boolean', default: false })
   isChecked: boolean;
   @Column({ default: '' })
@@ -15,6 +15,8 @@ export class TodoEntity {
   creator: string;
   @PrimaryGeneratedColumn()
   id: number;
+  @Column({ type: 'date', default: new Date().toUTCString() })
+  createdAt: string;
   @ManyToOne(() => UserEntity, user => user.tasks)
   user: UserEntity;
 }

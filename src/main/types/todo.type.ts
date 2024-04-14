@@ -8,3 +8,5 @@ export type Todo = {
   field: Array<Field>;
   id: number;
 }
+
+export type TodoType = 'school' | 'work' | 'shop' | 'read' | 'work out';
