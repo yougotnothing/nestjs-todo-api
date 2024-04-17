@@ -129,4 +129,20 @@ export class TasksService {
       tasks: tasks
     }
   }
+
+  async getTodayTasks(createdAt: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.findBy({ createdAt }); 
+
+    if(!tasks.length) {
+      return {
+        message: "user has no tasks.",
+        tasks: []
+      }
+    }
+
+    return {
+      message: `tasks by created at ${createdAt}:`,
+      tasks: tasks
+    }
+  }
 }

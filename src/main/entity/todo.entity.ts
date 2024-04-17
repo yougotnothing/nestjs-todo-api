@@ -15,7 +15,13 @@ export class TodoEntity {
   creator: string;
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ type: 'date', default: new Date().toUTCString() })
+  @Column()
+  till: string;
+  @Column()
+  from: string;
+  @Column({ type: 'boolean', default: false })
+  important: boolean;
+  @Column()
   createdAt: string;
   @ManyToOne(() => UserEntity, user => user.tasks)
   user: UserEntity;

@@ -1,9 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Patch, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Patch, Query, Req } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TodoEntity } from "../entity/todo.entity";
 import { Repository } from "typeorm";
 import { Auth } from "../guard/auth.guard";
-import { UserEntity } from "../entity/user.entity";
 import { TasksService } from "../service/tasks.service";
 import { TodoType } from "../types/todo.type";
 
@@ -12,7 +11,6 @@ export class TasksController {
   constructor(
     @InjectRepository(TodoEntity)
     private readonly todoRepository: Repository<TodoEntity>,
-    @InjectRepository(UserEntity)
     private readonly tasksService: TasksService,
     private readonly auth: Auth
   ) {}
@@ -75,5 +73,17 @@ export class TasksController {
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.getTasksByType(body.type);
+  }
+
+  @Get('/today-tasks')
+  @HttpCode(200)
+  async getTodayTasks(@Query() query: { createdAt: string }, @Req() req: Request) {
+    const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+    const todo = await this.todoRepository.findBy({ createdAt: query.createdAt }); 
+
+    if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+    if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
+
+    return await this.tasksService.getTodayTasks(query.createdAt);
   }
 }
