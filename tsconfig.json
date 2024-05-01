@@ -17,5 +17,13 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "controller/*": ["src/main/controller/*"],
+      "service/*": ["src/main/service/*"],
+      "module/*": ["src/main/module/*"],
+      "entity/*": ["src/main/entity/*"],
+      "types/*": ["src/main/types/*"],
+      "guard/*": ["src/main/guard/*"]
+    }
   }
 }

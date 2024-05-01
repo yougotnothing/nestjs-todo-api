@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthService } from './main/service/auth.service';
-import { UserEntity } from './main/entity/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { TodoEntity } from './main/entity/todo.entity';
-import { AuthController } from './main/controller/auth.controller';
 import { ormconfig } from 'dbconfig';
-import { UserService } from './main/service/user.service';
-import { UserController } from './main/controller/user.controller';
-import { TasksService } from './main/service/tasks.service';
-import { TasksController } from './main/controller/tasks.controller';
-import { Auth } from './main/guard/auth.guard';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthController } from 'controller/auth.controller';
+import { TasksController } from 'controller/tasks.controller';
+import { UserController } from 'controller/user.controller';
+import { TodoEntity } from 'entity/todo.entity';
+import { UserEntity } from 'entity/user.entity';
+import { AuthService } from 'service/auth.service';
+import { TasksService } from 'service/tasks.service';
+import { UserService } from 'service/user.service';
+import { Auth } from 'guard/auth.guard';
+
 
 @Module({
   imports: [

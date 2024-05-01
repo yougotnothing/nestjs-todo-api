@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Patch, Post, HttpException, HttpStatus, Req, Delete, HttpCode } from "@nestjs/common";
-import { UserService } from "../service/user.service";
-import { TodoEntity } from "../entity/todo.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "../entity/user.entity";
 import { Repository } from "typeorm";
+import { UserEntity } from "../entity/user.entity";
+import { TodoEntity } from "../entity/todo.entity";
+import { UserService } from "../service/user.service";
 
 @Controller('user')
 export class UserController {
@@ -48,9 +48,7 @@ export class UserController {
     const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
     const isTokenValid = await user.comparePassword(encryptedToken[1]);
 
-    if(!isTokenValid) {
-      throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
-    }
+    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.userService.deleteTask(user.id, task_id);
   }
@@ -65,7 +63,6 @@ export class UserController {
     const isTokenValid = await user.comparePassword(token_);
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-
     if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.userService.getTasks(encryptedToken[0]);

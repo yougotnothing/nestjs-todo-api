@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
-import { TodoEntity } from "./todo.entity";
+import { TodoEntity } from "entity/todo.entity";
 
 @Entity()
 export class UserEntity {

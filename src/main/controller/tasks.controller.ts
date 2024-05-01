@@ -1,10 +1,21 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Patch, Query, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Patch,
+  Query,
+  Req
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { TodoEntity } from "../entity/todo.entity";
 import { Repository } from "typeorm";
-import { Auth } from "../guard/auth.guard";
-import { TasksService } from "../service/tasks.service";
-import { TodoType } from "../types/todo.type";
+import { TodoEntity } from "entity/todo.entity";
+import { TasksService } from "service/tasks.service";
+import { TodoType } from "types/todo.type";
+import { Auth } from "guard/auth.guard";
 
 @Controller('tasks')
 export class TasksController {
@@ -29,14 +40,14 @@ export class TasksController {
 
   @Delete('/delete-task')
   @HttpCode(200)
-  async deleteTask(@Body() body: { id: number }, @Req() req: Request) {
+  async deleteTask(@Query('id') id: number, @Req() req: Request) {
     const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findOneBy({ id: body.id });
+    const todo = await this.todoRepository.findOneBy({ id: id });
 
     if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
 
-    return await this.tasksService.deleteTask(body.id);
+    return await this.tasksService.deleteTask(id);
   }
 
   @Patch('/change-content')
@@ -53,26 +64,26 @@ export class TasksController {
 
   @Get('/get-tasks')
   @HttpCode(200)
-  async getTasks(@Body() body: { id: number, substring: string }, @Req() req: Request) {
+  async getTasks(@Query() query: { id: number, substring: string }, @Req() req: Request) {
     const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findOneBy({ id: body.id });
+    const todo = await this.todoRepository.findOneBy({ id: query.id });
 
     if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
-    return await this.tasksService.searchTasks(body.substring);
+    return await this.tasksService.searchTasks(query.substring);
   }
 
   @Get('/get-tasks-by-type')
   @HttpCode(200)
-  async getTasksByType(@Body() body: { type: TodoType }, @Req() req: Request) {
+  async getTasksByType(@Query('type') type: TodoType, @Req() req: Request) {
     const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findBy({ type: body.type }); 
+    const todo = await this.todoRepository.findBy({ type });
 
     if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
-    return await this.tasksService.getTasksByType(body.type);
+    return await this.tasksService.getTasksByType(type);
   }
 
   @Get('/today-tasks')

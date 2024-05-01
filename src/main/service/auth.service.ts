@@ -1,13 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Response } from "@nestjs/common";
-import { UserEntity } from "../entity/user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
-import { RegisterDto } from "../types/register.dto";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserEntity } from "entity/user.entity";
+import { RegisterDto } from "types/register.dto";
 
 @Injectable()
 export class AuthService {
-
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>
@@ -33,11 +32,10 @@ export class AuthService {
       user.password = await bcrypt.hash(user_dto.password, 10);
       user.tasks = [];
       
-      this.userRepository.save(user);
+      await this.userRepository.save(user);
       
-      HttpStatus.OK;
       return {
-        status: 201,
+        status: 200,
         message: 'you have been registered!'
       }
     }

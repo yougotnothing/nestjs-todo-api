@@ -1,6 +1,6 @@
 import { Body, Controller, Header, HttpCode, HttpException, Post } from "@nestjs/common";
-import { AuthService } from "../service/auth.service";
-import { RegisterDto } from "../types/register.dto";
+import { AuthService } from "service/auth.service";
+import { RegisterDto } from "types/register.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +20,7 @@ export class AuthController {
   @Header('Access-Control-Allow-Headers', 'Content-Type')
   async login(@Body() loginDto: { login: string, password: string }) {
     try {
-      const resp = await this.authService.login(loginDto);
-      return resp;
+      return await this.authService.login(loginDto);
     }catch(error: any) {
       throw new HttpException(error.message, error.status);
     }
