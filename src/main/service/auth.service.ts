@@ -19,13 +19,8 @@ export class AuthService {
     if(isUserCreated) {
       throw new HttpException("User already exists.", HttpStatus.BAD_REQUEST);
     }else{
-      if(user_dto.password.length > 8) {
-        throw new HttpException("Password must be less than 8 characters.", 440);
-      }
-
-      if(user_dto.name.length > 3) {
-        throw new HttpException("Name must be less than 3 characters.", 441);
-      }
+      if(user_dto.password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
+      if(user_dto.name.length > 3) throw new HttpException("Name must be less than 3 characters.", 441);
 
       user.name = user_dto.name;
       user.email = user_dto.email;
@@ -42,27 +37,21 @@ export class AuthService {
   }
 
   async login(loginDto: { login: string, password: string }): Promise<{ message: string, token: string }> {
-    const { login, password } = loginDto;
     const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    const { login, password } = loginDto;
     let user: UserEntity;
+    
     
     if(!regex.test(login)) {
       user = await this.userRepository.findOneBy({ name: login });
     }else user = await this.userRepository.findOneBy({ email: login });
 
-    if(!user) {
-      throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
-    }
-
-    if(password.length > 8) {
-      throw new HttpException("Password must be less than 8 characters.", 440);
-    }
+    if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+    if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
 
     const isMatching: boolean = await user.comparePassword(password);
 
-    if(!isMatching) {
-      throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
-    }
+    if(!isMatching) throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
 
     const TOKEN = Buffer.from(`${user.name}:${password}`).toString('base64');
 

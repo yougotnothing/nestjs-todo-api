@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Patch, Post, HttpException, HttpStatus, Req, Delete, HttpCode } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  HttpException,
+  HttpStatus,
+  Req,
+  Delete,
+  HttpCode
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { UserEntity } from "../entity/user.entity";
-import { TodoEntity } from "../entity/todo.entity";
-import { UserService } from "../service/user.service";
+import { UserEntity } from "entity/user.entity";
+import { TodoEntity } from "entity/todo.entity";
+import { UserService } from "service/user.service";
 
 @Controller('user')
 export class UserController {
