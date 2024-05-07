@@ -13,8 +13,8 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "entity/user.entity";
-import { TodoEntity } from "entity/todo.entity";
 import { UserService } from "service/user.service";
+import { CreateTodoDto } from "types/create.todo.dto";
 
 @Controller('user')
 export class UserController {
@@ -38,7 +38,7 @@ export class UserController {
 
   @Post('/add-task')
   @HttpCode(200)
-  async addTask(@Body() body: { task: TodoEntity }, @Req() req: Request) {
+  async addTask(@Body() task: CreateTodoDto, @Req() req: Request) {
     const token = req.headers['authorization'].split(' ')[1];
     const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
     const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
@@ -48,7 +48,7 @@ export class UserController {
       throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
     }
 
-    return await this.userService.addTask(body.task, encryptedToken[0]);
+    return await this.userService.addTask(task, encryptedToken[0]);
   }
 
   @Delete('/delete-task')

@@ -21,5 +21,5 @@ export class Auth extends AuthGuard('basic') {
     if(!isTokenValid) {
       return false;
     }else return true;
-  }  
+  }
 }

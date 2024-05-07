@@ -13,7 +13,6 @@ import { TasksService } from 'service/tasks.service';
 import { UserService } from 'service/user.service';
 import { Auth } from 'guard/auth.guard';
 
-
 @Module({
   imports: [
     UserEntity,

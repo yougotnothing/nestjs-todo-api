@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { UserEntity } from "entity/user.entity";
 import { TodoEntity } from "entity/todo.entity";
 import { PublicUserDto } from "types/public.user.dto";
+import { CreateTodoDto } from "types/create.todo.dto";
 
 @Injectable()
 export class UserService {
@@ -54,17 +55,25 @@ export class UserService {
     }
   }
 
-  async addTask(task: TodoEntity, username: string): Promise<{ message: string }> {
+  async addTask(task: CreateTodoDto, username: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ name: username });
-    const task_ = new TodoEntity();
+    const newTask = new TodoEntity();
+
+    if(!task.header.length) throw new HttpException("header cannot be empty.", HttpStatus.BAD_REQUEST);
     
-    task_.content = task.content;
-    task_.header = task.header;
-    task_.creator = username;
-    task_.user = user;
-
-    await this.todoRepository.save(task_);
-
+    newTask.header = task.header;
+    newTask.creator = username;
+    newTask.user = user;
+    newTask.isChecked = task.isChecked;
+    newTask.important = task.important;
+    newTask.createdAt = task.createdAt;
+    newTask.till = task.till;
+    newTask.from = task.from;
+    newTask.type = task.type;
+    newTask.tasks = task.tasks;
+    
+    await this.todoRepository.save(newTask);
+    
     return {
       message: "task added."
     }
@@ -74,11 +83,7 @@ export class UserService {
     const user = await this.userRepository.findOneBy({ id });
     const task = await this.todoRepository.findOneBy({ id: taskId });
 
-    if(!user.tasks.includes(task)) {
-      return {
-        message: "task not found."
-      }
-    }
+    if(!user.tasks.includes(task)) return { message: "task not found." }
 
     await this.todoRepository.delete(task);
     await this.todoRepository.save(task);

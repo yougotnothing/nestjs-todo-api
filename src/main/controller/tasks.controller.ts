@@ -42,24 +42,12 @@ export class TasksController {
   @HttpCode(200)
   async deleteTask(@Query('id') id: number, @Req() req: Request) {
     const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findOneBy({ id: id });
+    const todo = await this.todoRepository.findOneBy({ id });
 
     if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.deleteTask(id);
-  }
-
-  @Patch('/change-content')
-  @HttpCode(200)
-  async changeContent(@Body() body: { id: number, content: string }, @Req() req: Request) {
-    const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findOneBy({ id: body.id });
-
-    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
-    if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
-
-    return await this.tasksService.changeContent({ ...body });
   }
 
   @Get('/get-tasks')
@@ -96,5 +84,38 @@ export class TasksController {
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.getTodayTasks(query.createdAt);
+  }
+
+  @Get('/tasks-by-header')
+  @HttpCode(200)
+  async getTasksByHeader(@Query('header') header: string, @Req() req: Request) {
+    const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+    const todo = await this.todoRepository.findBy({ header });
+
+    if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+    if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
+    if(!header.length) throw new HttpException("header cannot be empty.", HttpStatus.BAD_REQUEST);
+
+    return await this.tasksService.getTasksByHeader(header);
+  }
+
+  @Get('/month-tasks')
+  @HttpCode(200)
+  async getMonthTasks(@Query('month') month: string, @Req() req: Request) {
+    const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.tasksService.getTasksByMonth(month);
+  }
+
+  @Get('/week-tasks')
+  @HttpCode(200)
+  async getWeekTasks(@Query('week') week: string, @Req() req: Request) {
+    const isTokenValid = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!isTokenValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.tasksService.getTasksByWeek(week);
   }
 }

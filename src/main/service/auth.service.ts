@@ -11,7 +11,6 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>
   ) {}
-
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const isUserCreated = await this.userRepository.findOneBy({ name: user_dto.name, email: user_dto.email });
     const user = new UserEntity();
