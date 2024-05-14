@@ -8,13 +8,15 @@ import {
   HttpStatus,
   Req,
   Delete,
-  HttpCode
+  HttpCode,
+  Query
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "entity/user.entity";
 import { UserService } from "service/user.service";
 import { CreateTodoDto } from "types/create.todo.dto";
+import { Auth } from "guard/auth.guard";
 
 @Controller('user')
 export class UserController {
@@ -22,6 +24,7 @@ export class UserController {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
+    private readonly auth: Auth
   ) {}
 
   @Patch('/change-avatar')
@@ -39,27 +42,20 @@ export class UserController {
   @Post('/add-task')
   @HttpCode(200)
   async addTask(@Body() task: CreateTodoDto, @Req() req: Request) {
-    const token = req.headers['authorization'].split(' ')[1];
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
-    const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
-    const isTokenValid = await user.comparePassword(encryptedToken[1]);
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
 
-    if(!isTokenValid) {
-      throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
-    }
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
-    return await this.userService.addTask(task, encryptedToken[0]);
+    return await this.userService.addTask(task, validation.name);
   }
 
   @Delete('/delete-task')
   @HttpCode(200)
   async deleteTask(@Req() req: Request, @Body() task_id: number) {
-    const token = req.headers['authorization'].split(' ')[1];
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
-    const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
-    const isTokenValid = await user.comparePassword(encryptedToken[1]);
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+    const user = await this.userRepository.findOneBy({ name: validation.name });
 
-    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.userService.deleteTask(user.id, task_id);
   }
@@ -67,21 +63,22 @@ export class UserController {
   @Get('/get-tasks')
   @HttpCode(200)
   async getTasks(@Req() req: Request) {
-    const token = req.headers['authorization'].split(' ')[1];
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
-    const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
-    const token_ = encryptedToken[1];
-    const isTokenValid = await user.comparePassword(token_);
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
 
-    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
-    return await this.userService.getTasks(encryptedToken[0]);
+    return await this.userService.getTasks(validation.name);
   }
 
   @Get('/get-user')
   @HttpCode(200)
   async getUser(@Req() req: Request) {
     return await this.userService.getUser(req.headers['authorization'].split(' ')[1]);
+  }
+
+  @Get('/get-avatar')
+  @HttpCode(200)
+  async getAvatar(@Query('id') id: number,@Req() req: Request) {
+    return await this.userService.getAvatar(req.headers['authorization'].split(' ')[1], id);
   }
 }

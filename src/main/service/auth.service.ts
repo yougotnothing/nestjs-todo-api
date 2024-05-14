@@ -12,18 +12,19 @@ export class AuthService {
     private readonly userRepository: Repository<UserEntity>
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
-    const isUserCreated = await this.userRepository.findOneBy({ name: user_dto.name, email: user_dto.email });
+    const { email, name, password } = user_dto;
+    const isUserCreated = await this.userRepository.findOneBy({ name, email });
     const user = new UserEntity();
 
     if(isUserCreated) {
       throw new HttpException("User already exists.", HttpStatus.BAD_REQUEST);
     }else{
-      if(user_dto.password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
-      if(user_dto.name.length > 3) throw new HttpException("Name must be less than 3 characters.", 441);
+      if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
+      if(name.length > 3) throw new HttpException("Name must be less than 3 characters.", 441);
 
-      user.name = user_dto.name;
-      user.email = user_dto.email;
-      user.password = await bcrypt.hash(user_dto.password, 10);
+      user.name = name;
+      user.email = email;
+      user.password = await bcrypt.hash(password, 10);
       user.tasks = [];
       
       await this.userRepository.save(user);
@@ -52,11 +53,9 @@ export class AuthService {
 
     if(!isMatching) throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
 
-    const TOKEN = Buffer.from(`${user.name}:${password}`).toString('base64');
-
     return {
       message: "you have been loggined in!",
-      token: TOKEN 
+      token: Buffer.from(`${user.name}:${password}`).toString('base64') 
     }
   }
 }

@@ -13,13 +13,13 @@ export class Auth extends AuthGuard('basic') {
     super();
   }
 
-  async validate(token: string): Promise<boolean> {
+  async validate(token: string): Promise<{ isValid: boolean, name?: string }> {
     const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
     const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
     const isTokenValid = await user.comparePassword(encryptedToken[1]);
 
     if(!isTokenValid) {
-      return false;
-    }else return true;
+      return { isValid: false };
+    }else return { isValid: true, name: encryptedToken[0] };
   }
 }

@@ -5,6 +5,7 @@ import { UserEntity } from "entity/user.entity";
 import { TodoEntity } from "entity/todo.entity";
 import { PublicUserDto } from "types/public.user.dto";
 import { CreateTodoDto } from "types/create.todo.dto";
+import { Auth } from "guard/auth.guard";
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,8 @@ export class UserService {
     @InjectRepository(TodoEntity)
     private readonly todoRepository: Repository<TodoEntity>,
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly auth: Auth
   ) {}
 
   async changeAvatar(id: number, avatar: string): Promise<{ message: string }> {
@@ -111,6 +113,19 @@ export class UserService {
         email: user.email,
         avatar: user.avatar
       }
+    }
+  }
+
+  async getAvatar(token: string, id: number): Promise<{ message: string, avatar: string }> {
+    const isTokenValid = await this.auth.validate(token);
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+
+    return {
+      message: `${user.name}'s avatar`,
+      avatar: user.avatar
     }
   }
 }
