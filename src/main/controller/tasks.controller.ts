@@ -118,4 +118,14 @@ export class TasksController {
 
     return await this.tasksService.getTasksByWeek(week);
   }
+
+  @Get('/tasks-length')
+  @HttpCode(200)
+  async getTasksLength(@Req() req: Request) {
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.tasksService.getTasksLength();
+  }
 }

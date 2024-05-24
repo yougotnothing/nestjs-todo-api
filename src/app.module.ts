@@ -12,13 +12,23 @@ import { AuthService } from 'service/auth.service';
 import { TasksService } from 'service/tasks.service';
 import { UserService } from 'service/user.service';
 import { Auth } from 'guard/auth.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     UserEntity,
     TodoEntity,
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ormconfig(configService),
+      inject: [ConfigService]
+    }), 
     TypeOrmModule.forFeature([UserEntity, TodoEntity]),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+      expandVariables: true
+    })
   ],
   controllers: [
     AppController,

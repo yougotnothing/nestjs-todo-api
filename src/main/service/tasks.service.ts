@@ -129,7 +129,7 @@ export class TasksService {
       updatedDate.push(day.toString());
       const dateString = updatedDate.join("");
   
-      return `${splittedDate[0]}, ${dateString}, ${splittedDate[2]}`;
+      return `${dateString}, ${splittedDate[2]}`;
     };
 
     const tasks = await this.todoRepository.findBy({
@@ -142,6 +142,26 @@ export class TasksService {
     return {
       message: "Tasks for the week retrieved successfully.",
       tasks: tasks
+    };
+  }
+
+  async getTasksLength(): Promise<{ message: string, tasks: Record<TodoType, number> }> {
+    const tasks = await this.todoRepository.find();
+
+    const tasksLength = tasks.reduce((acc, task) => {
+      switch(task.type) {
+        case "school": acc.school += 1; break;
+        case "work": acc.work += 1; break;
+        case "shop": acc.shop += 1; break;
+        case "read": acc.read += 1; break;
+        case "work out": acc["work out"] += 1; break;
+      }
+      return acc;
+    }, { "school": 0, "work": 0, "shop": 0, "read": 0,"work out": 0 });
+
+    return {
+      message: "tasks length retrieved successfully.",
+      tasks: tasksLength
     };
   }
 }
