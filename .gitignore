@@ -1,7 +1,11 @@
 # compiled output
 /dist
 /node_modules
-dbconfig.ts
+
+# env
+.env
+.env.*
+*.env
 
 # Logs
 logs
