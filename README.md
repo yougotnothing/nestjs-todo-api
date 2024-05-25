@@ -194,7 +194,7 @@ yarn build
   - **Request Headers**
     - `Authorization`: *`Basic` string*
   - **Query**
-    - `id`: *number* // task id
+    - `id`: *number* ***(task id)***
   - **Response**
     - `status`: *number*
     - `message`: *string*
