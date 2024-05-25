@@ -50,16 +50,16 @@ export class TasksController {
     return await this.tasksService.deleteTask(id);
   }
 
-  @Get('/get-tasks')
+  @Get('/get-tasks-by-substring')
   @HttpCode(200)
-  async getTasks(@Query() query: { id: number, substring: string }, @Req() req: Request) {
+  async getTasks(@Query() query: { id?: number, substring: string }, @Req() req: Request) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
     const todo = await this.todoRepository.findOneBy({ id: query.id });
 
     if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
-    return await this.tasksService.searchTasks(query.substring);
+    return await this.tasksService.getTasksBySubstring(query.substring);
   }
 
   @Get('/get-tasks-by-type')

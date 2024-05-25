@@ -50,7 +50,7 @@ export class TasksService {
     }
   }
 
-  async searchTasks(substring: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+  async getTasksBySubstring(substring: string): Promise<{ message: string, tasks: TodoEntity[] }> {
     const tasks = await this.todoRepository.find({ where: { header: Like(`%${substring}%`) } });
 
     if(!tasks.length) return {

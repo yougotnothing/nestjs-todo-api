@@ -5,47 +5,58 @@
 <a href="#configuration">Configuration</a>
 <a href="#installation">Installation</a>
 <a href="#running-the-app">Running the app</a>
-<a href="#building-the-app">Building the app</a>
+<a href="#docs__types">Types</a>
 
 ## This is a NestJS todo Rest API
 
+<br id="configuration">
+
 ## Configuration
 
-- in the root folder create a `.env` file and add the followind variables:
+- in the **root folder** *create* a `.env` file and add the followind ***variables***:
 
+`.env`
 ```env
-  DB_NAME=... #your postgres database name
-  DB_PASSWORD=... #your postgres password
-  DB_USERNAME=... #your postgres username
-  DB_PORT=... #your postgres port
-  DB_HOST=localhost #this is default value, you can change it if you run don't run app on localhost
+DB_NAME=... #your postgres database name
+DB_PASSWORD=... #your postgres password
+DB_USERNAME=... #your postgres username
+DB_PORT=... #your postgres port
+DB_HOST=localhost #this is default value, you can change it if you run don't run app on localhost
 ```
+
+<br id="installation">
 
 ## Installation
 
-- to run the app you need to isntall all dependencies:
+- to ***run*** the app you ***need to install*** all **dependencies**:
 
+`bash`
 ```bash
-  yarn install
+yarn install
 ```
 
 ---
 
+<br id="running-the-app">
+
 ## Running the app
 
-- to run app in dev mode:
+`bash`
+- to ***run app*** in *`dev`* mode:
 ```bash
-  yarn start:dev
+yarn start:dev
 ```
 
-- to run app in prod mode:
+`bash`
+- to ***run app*** in *`prod`* mode:
 ```bash
-  yarn start:prod
+yarn start:prod
 ```
 
-- to build the app: 
+`bash`
+- to ***`build`*** the app: 
 ```bash
-  yarn build
+yarn build
 ```
 
 ---
@@ -54,15 +65,271 @@
 
 ## API Documentation
 
-### Auth
+<a href="#docs__auth">Auth</a>
+<a href="#docs__user">User</a>
+<a href="#docs__tasks">Tasks</a>
 
-- `POST /auth/register`
+<br id="docs__auth">
+
+### ***Auth***
+
+- ***`POST`*** `/auth/register`
   - register a new user
   - **Request Body**
-    - `name`: string
-    - `email`: string
-    - `password`: string
+    - `name`: *string*
+    - `email`: *string*
+    - `password`: *string*
   - **Response**
-    - `status`: number
-    - `message`: string
-    - `token`: string
+    - `status`: *number*
+    - `message`: *string*
+    - `token`: *string*
+
+- ***`POST`*** `/auth/login`
+  - login a user
+  - **Request Body**
+    - `login`: *string*
+    - `password`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `token`: *string*
+
+<br id="docs__user">
+
+### ***User***
+
+- ***`PATCH`*** `/user/change-avatar` *(deprecated)*
+  - changes user avatar
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Request Body**
+    - `id`: *number*
+    - `avatar`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+- ***`PATCH`*** `/user/change-name`
+  - changes user name
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Request Body**
+    - `id`: *number*
+    - `name`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+- ***`GET`*** `/user/get-tasks`
+  - get all user tasks
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `/user/get-user`
+  - get public user DTO by token
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `user`: *<a href="#docs__types__user">PublicUserDto</a>*
+
+- ***`GET`*** `/user/get-avatar`
+  - get user avatar url by token
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `avatar`: *string*
+
+- ***`POST`*** `/user/add-task`
+  - add new task
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Request Body**
+    - `task`: *<a href="#docs__types__CreateTodoDto">CreateTodoDto</a>*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+- ***`DELETE`*** `/user/delete-task`
+  - delete task
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Request Body**
+    - `id`: *number*
+    - `taskId`: *number*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+<br id="docs__tasks">
+
+### ***Tasks***
+
+- ***`PATCH`*** `/tasks/change-header`
+  - changes task header
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Request Body**
+    - `id`: *number*
+    - `header`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+- ***`DELETE`*** `/tasks/delete-task`
+  - delete task
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `id`: *number* // task id
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+
+- ***`GET`*** `tasks/get-tasks-by-substring` *(deprecated)*
+  - get tasks by substring
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `substring`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-tasks-by-type`
+  - get tasks by type
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `type`: *<a href="#docs__types__TodoType">TodoType</a>*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-today-tasks`
+  - get today tasks
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `createdAt`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-tasks-by-header`
+  - get tasks by header
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `header`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-tasks-by-month`
+  - get tasks by month
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `month`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-tasks-by-week` *(deprecated)*
+  - get tasks by week
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `week`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+
+- ***`GET`*** `tasks/get-tasks-length`
+  - get tasks length
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `tasks`: *<a href="#docs__types__Task">Record<TodoType, number></a>*
+
+<br id="docs__types">
+
+## Types
+
+### ***Task***
+
+<br href="#docs__types__Task">
+
+```typescript
+  interface Task {
+    header: string;
+    isChecked: boolean;
+    createdAt: string;
+    from: string;
+    till: string;
+    important: boolean;
+    creator: string; // user name
+    id: number;
+    type: TodoType;
+    tasks: Array<{ isChecked: boolean, content: string }>; // subtasks
+  }
+```
+
+<br id="docs__types__user">
+
+### ***User***
+
+```typescript
+interface User {
+  name: string;
+  email: string;
+  password: string;
+  avatar: string;
+  isHaveAvatar: boolean;
+  tasks: Task[];
+}
+```
+
+<br id="docs__types__CreateTodoDto">
+
+### ***CreateTodoDto***
+
+```typescript
+interface CreateTodoDto {
+  isChecked: boolean;
+  createdAt: string;
+  from: string;
+  header: string;
+  important: boolean;
+  tasks: Array<{ isChecked: boolean, content: string }>;
+  till: string;
+  type: TodoType;
+}
+```
+
+### ***TodoType***
+
+```typescript
+type TodoType = 
+  | 'school'
+  | 'work'
+  | 'shop'
+  | 'read'
+  | 'work out';
+```
