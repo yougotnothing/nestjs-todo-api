@@ -47,6 +47,7 @@
 ---
 
 <br id="docs">
+
 ## API Documentation
 
 ### Auth
