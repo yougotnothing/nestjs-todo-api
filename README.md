@@ -1,7 +1,7 @@
 # NestJS API
 ---
 
-<a href="### API Documentation">Docs</a>
+<a href="#docs">Docs</a>
 
 ## This is a NestJS todo Rest API
 
@@ -46,6 +46,7 @@
 
 ---
 
+<br id="docs">
 ## API Documentation
 
 ### Auth
