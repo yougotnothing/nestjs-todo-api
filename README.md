@@ -2,6 +2,10 @@
 ---
 
 <a href="#docs">Docs</a>
+<a href="#configuration">Configuration</a>
+<a href="#installation">Installation</a>
+<a href="#running-the-app">Running the app</a>
+<a href="#building-the-app">Building the app</a>
 
 ## This is a NestJS todo Rest API
 
