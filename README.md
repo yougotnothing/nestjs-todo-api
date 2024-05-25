@@ -63,7 +63,7 @@ yarn build
 
 <br id="docs">
 
-## API Documentation
+# ***API Documentation***
 
 <a href="#docs__auth">Auth</a>
 <a href="#docs__user">User</a>
@@ -71,7 +71,7 @@ yarn build
 
 <br id="docs__auth">
 
-### ***Auth***
+## **Auth**
 
 - ***`POST`*** `/auth/register`
   - register a new user
@@ -96,7 +96,7 @@ yarn build
 
 <br id="docs__user">
 
-### ***User***
+## **User**
 
 - ***`PATCH`*** `/user/change-avatar` *(deprecated)*
   - changes user avatar
@@ -176,7 +176,7 @@ yarn build
 
 <br id="docs__tasks">
 
-### ***Tasks***
+## **Tasks**
 
 - ***`PATCH`*** `/tasks/change-header`
   - changes task header
@@ -290,7 +290,7 @@ yarn build
 
 <br id="docs__types">
 
-## Types
+# ***Types***
 
 ### ***Task***
 
