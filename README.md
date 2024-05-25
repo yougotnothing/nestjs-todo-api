@@ -8,11 +8,11 @@
 - in the root folder create a `.env` file and add the followind variables:
 
 ```env
-  DB_NAME=... //your postgres database name
-  DB_PASSWORD=... //your postgres password
-  DB_USERNAME=... //your postgres username
-  DB_PORT=... //your postgres port
-  DB_HOST=localhost // this is default value, you can change it if you run don't run app on localhost
+  DB_NAME=... #your postgres database name
+  DB_PASSWORD=... #your postgres password
+  DB_USERNAME=... #your postgres username
+  DB_PORT=... #your postgres port
+  DB_HOST=localhost #this is default value, you can change it if you run don't run app on localhost
 ```
 
 ## Installation
