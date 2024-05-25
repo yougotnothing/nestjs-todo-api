@@ -127,7 +127,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+## <a href="#docs__types__Task">Task[]</a>
 
 - ***`GET`*** `/user/get-user`
   - get public user DTO by token
@@ -136,7 +138,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `user`: *<a href="#docs__types__user">PublicUserDto</a>*
+    - `user`: *PublicUserDto*
+
+## <a href="#docs__types__PublicUserDto">PublicUserDto</a>
 
 - ***`GET`*** `/user/get-avatar`
   - get user avatar url by token
@@ -152,10 +156,12 @@ yarn build
   - **Request Headers**
     - `Authorization`: *`Basic` string*
   - **Request Body**
-    - `task`: *<a href="#docs__types__CreateTodoDto">CreateTodoDto</a>*
+    - `task`: *CreateTodoDto*
   - **Response**
     - `status`: *number*
     - `message`: *string*
+
+## <a href="#docs__types__CreateTodoDto">CreateTodoDto</a>
 
 - ***`DELETE`*** `/user/delete-task`
   - delete task
@@ -202,18 +208,22 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+## <a href="#docs__types__Task">Task[]</a>
 
 - ***`GET`*** `tasks/get-tasks-by-type`
   - get tasks by type
   - **Request Headers**
     - `Authorization`: *`Basic` string*
   - **Query**
-    - `type`: *<a href="#docs__types__TodoType">TodoType</a>*
+    - `type`: *TodoType*
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+## <a href="#docs__types__Task">Task[]</a>, <a href="#docs__types__TodoType">TodoType</a>
 
 - ***`GET`*** `tasks/get-today-tasks`
   - get today tasks
@@ -224,7 +234,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+## <a href="#docs__types__Task">Task[]</a>
 
 - ***`GET`*** `tasks/get-tasks-by-header`
   - get tasks by header
@@ -235,7 +247,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+##  <a href="#docs__types__Task">Task[]</a>
 
 - ***`GET`*** `tasks/get-tasks-by-month`
   - get tasks by month
@@ -246,7 +260,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+## <a href="#docs__types__Task">Task[]</a>
 
 - ***`GET`*** `tasks/get-tasks-by-week` *(deprecated)*
   - get tasks by week
@@ -257,7 +273,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Task[]</a>*
+    - `tasks`: *Task[]*
+
+##  *<a href="#docs__types__Task">Task</a>*
 
 - ***`GET`*** `tasks/get-tasks-length`
   - get tasks length
@@ -266,7 +284,9 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `tasks`: *<a href="#docs__types__Task">Record<TodoType, number></a>*
+    - `tasks`: *Record<TodoType, number>*
+
+##  *<a href="#docs__types__TodoType">TodoType</a>*
 
 <br id="docs__types">
 
