@@ -355,3 +355,16 @@ type TodoType =
   | 'read'
   | 'work out';
 ```
+
+<br id="docs__types__PublicUserDto">
+
+### ***PublicUserDto***
+
+```typescript
+interface PublicUserDto {
+  isHaveAvatar: boolean;
+  name: string;
+  email: string;
+  avatar: string;
+}
+```
