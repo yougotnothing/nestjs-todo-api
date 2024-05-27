@@ -17,17 +17,28 @@ export class UserService {
     private readonly auth: Auth
   ) {}
 
-  async changeAvatar(id: number, avatar: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOneBy({ id });
-    user.avatar = avatar;
-    if(!user.isHaveAvatar) user.isHaveAvatar = true;
+  async changeAvatar(avatar: Buffer, name: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ name });
+
+    if(!user) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+
+    console.log("User found:", user);
+
+    user.changeAvatar(avatar);
+
+    console.log("User before save:", user);
 
     await this.userRepository.save(user);
 
+    const updatedUser = await this.userRepository.findOneBy({ name });
+    console.log("User after save:", updatedUser);
+
     return {
-      message: "avatar changed."
-    }
+      message: "Avatar changed."
+    };
   }
+
+
 
   async changeName(id: number, name: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ id });
@@ -97,13 +108,11 @@ export class UserService {
   }
 
   async getUser(token: string): Promise<{ message: string, user: PublicUserDto }> {
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
-    const name = encryptedToken[0];
-    const user = await this.userRepository.findOneBy({ name });
-    const isTokenValid = await user.comparePassword(encryptedToken[1]);
+    const validation = await this.auth.validate(token);
+    const user = await this.userRepository.findOneBy({ name: validation.name });
     
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return {
       message: "user found.",
@@ -116,16 +125,7 @@ export class UserService {
     }
   }
 
-  async getAvatar(token: string, id: number): Promise<{ message: string, avatar: string }> {
-    const isTokenValid = await this.auth.validate(token);
-    const user = await this.userRepository.findOneBy({ id });
-
-    if(!isTokenValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
-    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-
-    return {
-      message: `${user.name}'s avatar`,
-      avatar: user.avatar
-    }
+  async getAvatar(id: number): Promise<Buffer> {
+    return await this.userRepository.findOneBy({ id }).then(user => user.avatar);
   }
 }

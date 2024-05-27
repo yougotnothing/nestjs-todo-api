@@ -96,7 +96,7 @@ yarn build
 
 <br id="docs__user">
 
-## **User**
+## **User** 
 
 - ***`PATCH`*** `/user/change-avatar` *(deprecated)*
   - changes user avatar

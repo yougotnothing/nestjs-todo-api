@@ -120,23 +120,28 @@ export class TasksService {
     }
   }
 
-  async getTasksByWeek(date: string): Promise<{ message: string, tasks: TodoEntity[] }> {
-    const splittedDate = date.split(", ");
-
-    const getDate = (day: number): string => {
-      const updatedDate = splittedDate[1].split("");
-      updatedDate.pop();
-      updatedDate.push(day.toString());
-      const dateString = updatedDate.join("");
-  
-      return `${dateString}, ${splittedDate[2]}`;
+    async getTasksByWeek(week: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+    // Преобразуем строку в объект Date
+    const parseDate = (dateString: string): Date => {
+      const [month, day, year] = dateString.split(" ");
+      return new Date(`${month} ${parseInt(day)}, ${year}`);
     };
 
-    const tasks = await this.todoRepository.findBy({
-      createdAt: Between(
-        getDate(parseInt(splittedDate[1][splittedDate[1].length - 1])),
-        getDate(parseInt(splittedDate[1][splittedDate[1].length - 1]) + 7)
-      )
+    const parsedDate = parseDate(week);
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error("Invalid date format");
+    }
+
+    // Начало и конец недели
+    const startDate = new Date(parsedDate);
+    const endDate = new Date(parsedDate);
+    endDate.setDate(startDate.getDate() + 6);
+
+    // Получение задач за неделю
+    const tasks = await this.todoRepository.find({
+      where: {
+        createdAtDate: Between(startDate, endDate)
+      }
     });
 
     return {

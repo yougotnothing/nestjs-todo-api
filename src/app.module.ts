@@ -13,6 +13,7 @@ import { TasksService } from 'service/tasks.service';
 import { UserService } from 'service/user.service';
 import { Auth } from 'guard/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -22,7 +23,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ormconfig(configService),
       inject: [ConfigService]
-    }), 
+    }),
+    MulterModule.register({
+      dest: './uploads/'
+    }),
     TypeOrmModule.forFeature([UserEntity, TodoEntity]),
     ConfigModule.forRoot({
       envFilePath: '.env',

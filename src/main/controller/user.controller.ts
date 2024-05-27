@@ -9,7 +9,11 @@ import {
   Req,
   Delete,
   HttpCode,
-  Query
+  Query,
+  UploadedFile,
+  UseInterceptors,
+  Header,
+  Res
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -17,6 +21,9 @@ import { UserEntity } from "entity/user.entity";
 import { UserService } from "service/user.service";
 import { CreateTodoDto } from "types/create.todo.dto";
 import { Auth } from "guard/auth.guard";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { Response } from "express";
+import * as multer from "multer";
 
 @Controller('user')
 export class UserController {
@@ -27,10 +34,22 @@ export class UserController {
     private readonly auth: Auth
   ) {}
 
-  @Patch('/change-avatar')
+  @Post('/change-avatar')
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: multer.memoryStorage()
+  }))
   @HttpCode(200)
-  async changeAvatar(@Body() body: { id: number, avatar: string }) {
-    return await this.userService.changeAvatar(body.id, body.avatar);
+  @Header('Content-Type', 'multipart/form-data')
+  async changeAvatar(@UploadedFile() avatar: Express.Multer.File, @Req() req: Request) {
+    console.log('file received: ', avatar);
+
+    if(!avatar) throw new HttpException("file is empty.", HttpStatus.BAD_REQUEST);
+
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.userService.changeAvatar(avatar.buffer, validation.name);
   }
 
   @Patch('/change-name')
@@ -78,7 +97,11 @@ export class UserController {
 
   @Get('/get-avatar')
   @HttpCode(200)
-  async getAvatar(@Query('id') id: number,@Req() req: Request) {
-    return await this.userService.getAvatar(req.headers['authorization'].split(' ')[1], id);
+  async getAvatar(@Query('id') id: number, @Res() res: Response) {
+    const avatar = await this.userService.getAvatar(id);
+    if(!avatar) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.send(avatar);
   }
 }

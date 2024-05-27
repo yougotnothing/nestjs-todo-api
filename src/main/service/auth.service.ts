@@ -20,12 +20,13 @@ export class AuthService {
       throw new HttpException("User already exists.", HttpStatus.BAD_REQUEST);
     }else{
       if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
-      if(name.length > 3) throw new HttpException("Name must be less than 3 characters.", 441);
+      if(name.length < 3) throw new HttpException("Name must be less than 3 characters.", 441);
 
       user.name = name;
       user.email = email;
       user.password = await bcrypt.hash(password, 10);
       user.tasks = [];
+      user.avatar = Buffer.from("");
       
       await this.userRepository.save(user);
       
