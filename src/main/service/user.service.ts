@@ -120,7 +120,7 @@ export class UserService {
         isHaveAvatar: user.isHaveAvatar,
         name: user.name,
         email: user.email,
-        avatar: user.avatar
+        avatar: `${process.env.API_URL}/user/get-avatar?id=${user.id}`
       }
     }
   }
