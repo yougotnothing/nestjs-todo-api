@@ -98,12 +98,11 @@ yarn build
 
 ## **User** 
 
-- ***`PATCH`*** `/user/change-avatar` *(deprecated)*
+- ***`POST`*** `/user/change-avatar`
   - changes user avatar
   - **Request Headers**
     - `Authorization`: *`Basic` string*
   - **Request Body**
-    - `id`: *number*
     - `avatar`: *string*
   - **Response**
     - `status`: *number*
@@ -128,6 +127,23 @@ yarn build
     - `status`: *number*
     - `message`: *string*
     - `tasks`: *Task[]*
+
+- ***`GET`*** `/user/get-avatar`
+  - get user avatar file by user id
+  - **Query**
+    - `id`: *number*
+  - **Response**
+    - `status`: *number*
+    - `avatar`: *Buffer*
+
+- ***`GET`*** `/user/get-user`
+  - get public user DTO by user id
+  - **Query**
+    - `id`: *number*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `user`: *PublicUserDto*
 
 ### <a href="#docs__types__Task">Task[]</a>
 
@@ -320,7 +336,7 @@ interface User {
   name: string;
   email: string;
   password: string;
-  avatar: string;
+  avatar: Buffer;
   isHaveAvatar: boolean;
   tasks: Task[];
 }
@@ -365,6 +381,6 @@ interface PublicUserDto {
   isHaveAvatar: boolean;
   name: string;
   email: string;
-  avatar: string;
+  avatar: string; // `${process.env.API_URL}/user/get-avatar?id=${user.id}`
 }
 ```

@@ -107,12 +107,10 @@ export class UserService {
     }
   }
 
-  async getUser(token: string): Promise<{ message: string, user: PublicUserDto }> {
-    const validation = await this.auth.validate(token);
-    const user = await this.userRepository.findOneBy({ name: validation.name });
+  async getUser(id: number): Promise<{ message: string, user: PublicUserDto }> {
+    const user = await this.userRepository.findOneBy({ id });
     
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return {
       message: "user found.",

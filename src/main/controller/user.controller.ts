@@ -91,8 +91,8 @@ export class UserController {
 
   @Get('/get-user')
   @HttpCode(200)
-  async getUser(@Req() req: Request) {
-    return await this.userService.getUser(req.headers['authorization'].split(' ')[1]);
+  async getUser(@Query('id') id: number) {
+    return await this.userService.getUser(id);
   }
 
   @Get('/get-avatar')
