@@ -1,5 +1,4 @@
 # NestJS API
----
 
 <a href="#docs">Docs</a>
 <a href="#configuration">Configuration</a>
