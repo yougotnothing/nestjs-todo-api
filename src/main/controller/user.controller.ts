@@ -70,9 +70,8 @@ export class UserController {
 
   @Get('/get-avatar')
   @HttpCode(200)
-  async getAvatar(@Query('id') id: number, @Res() res: Response) {
-    const avatar = await this.userService.getAvatar(id);
-    if(!avatar) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+  async getAvatar(@Query('id') id: number, @Query('time') time: Date, @Res() res: Response) {
+    const avatar = await this.userService.getAvatar(id, time);
 
     res.setHeader('Content-Type', 'image/jpeg');
     res.send(avatar);

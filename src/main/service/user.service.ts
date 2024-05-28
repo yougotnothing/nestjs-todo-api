@@ -70,7 +70,11 @@ export class UserService {
     }
   }
 
-  async getAvatar(id: number): Promise<Buffer> {
-    return await this.userRepository.findOneBy({ id }).then(user => user.avatar);
+  async getAvatar(id: number, time: Date): Promise<Buffer> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    console.log('time: ', time);
+
+    return user.avatar;
   }
 }
