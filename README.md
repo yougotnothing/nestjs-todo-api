@@ -6,6 +6,8 @@
 <a href="#running-the-app">Running the app</a>
 <a href="#docs__types">Types</a>
 
+---
+
 ## This is a NestJS todo Rest API
 
 <br id="configuration">
