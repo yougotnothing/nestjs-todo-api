@@ -161,35 +161,13 @@ yarn build
 
 - ***`GET`*** `/user/get-avatar`
   - get user avatar url by token
-  - **Request Headers**
-    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `id`: *number*
+    - `time`: *Date*
   - **Response**
     - `status`: *number*
     - `message`: *string*
     - `avatar`: *string*
-
-- ***`POST`*** `/user/add-task`
-  - add new task
-  - **Request Headers**
-    - `Authorization`: *`Basic` string*
-  - **Request Body**
-    - `task`: *CreateTodoDto*
-  - **Response**
-    - `status`: *number*
-    - `message`: *string*
-
-### <a href="#docs__types__CreateTodoDto">CreateTodoDto</a>
-
-- ***`DELETE`*** `/user/delete-task`
-  - delete task
-  - **Request Headers**
-    - `Authorization`: *`Basic` string*
-  - **Request Body**
-    - `id`: *number*
-    - `taskId`: *number*
-  - **Response**
-    - `status`: *number*
-    - `message`: *string*
 
 <br id="docs__tasks">
 
@@ -382,6 +360,6 @@ interface PublicUserDto {
   isHaveAvatar: boolean;
   name: string;
   email: string;
-  avatar: string; // `${process.env.API_URL}/user/get-avatar?id=${user.id}`
+  avatar: string; // `${process.env.API_URL}/user/get-avatar?id=${user.id}&time=${new Date()}`
 }
 ```
