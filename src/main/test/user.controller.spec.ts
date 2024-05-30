@@ -13,14 +13,15 @@ describe("UserController", () => {
 
     controller = userModule.get<UserController>(UserController);
 
-    describe("get-user", () => {
-      it("should return a user", async () => {
-        expect(await controller.getUser(1)).toBeDefined();
-      });
-    });
   });
-
+  
   it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+  
+  describe("get-user", () => {
+    it("should return a user", async () => {
+      expect(await controller.getUser(1)).toBeDefined();
+    });
   });
 });
