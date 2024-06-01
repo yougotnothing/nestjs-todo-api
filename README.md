@@ -169,6 +169,20 @@ yarn build
     - `message`: *string*
     - `avatar`: *string*
 
+- ***`PATCH`*** `/user/change-password`
+  - changes user password
+  - **Request Headers**
+    - `Authorization`: *`Basic` string*
+  - **Query**
+    - `id`: *number*
+  - **Request Body**
+    - `password`: *string*
+    - `confirmPassword`: *string*
+  - **Response**
+    - `status`: *number*
+    - `message`: *string*
+    - `token`: *`Basic` string*
+
 <br id="docs__tasks">
 
 ## **Tasks**
