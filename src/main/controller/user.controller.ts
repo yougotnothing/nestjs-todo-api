@@ -68,6 +68,22 @@ export class UserController {
     return await this.userService.getUser(id);
   }
 
+  @Patch('/change-password')
+  @HttpCode(200)
+  async changePassword(
+    @Req() req: Request,
+    @Query('id') id: number,
+    @Body() body: { password: string, confirmPassword: string }
+  ) {
+    const { password, confirmPassword } = body;
+    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+    
+    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    if(password !== confirmPassword) throw new HttpException("passwords don't match.", 443);
+
+    return await this.userService.changePassword(id, password);
+  }
+
   @Get('/get-avatar')
   @HttpCode(200)
   async getAvatar(@Query('id') id: number, @Query('time') time: Date, @Res() res: Response) {

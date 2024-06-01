@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { UserEntity } from "entity/user.entity";
 import { TodoEntity } from "entity/todo.entity";
 import { PublicUserDto } from "types/public.user.dto";
-import { Auth } from "guard/auth.guard";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -67,6 +67,21 @@ export class UserService {
         avatar: `${process.env.API_URL}/user/get-avatar?id=${user.id}`,
         id: user.id
       }
+    }
+  }
+
+  async changePassword(id: number, password: string): Promise<{ message: string, token: string }> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
+
+    user.password = await bcrypt.hash(password, 10);
+    await this.userRepository.save(user);
+
+    return {
+      message: "password changed.",
+      token: Buffer.from(`${user.name}:${password}`).toString('base64') 
     }
   }
 
