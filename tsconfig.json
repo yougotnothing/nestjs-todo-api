@@ -18,12 +18,12 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "controller/*": ["src/main/controller/*"],
-      "service/*": ["src/main/service/*"],
-      "module/*": ["src/main/module/*"],
-      "entity/*": ["src/main/entity/*"],
-      "types/*": ["src/main/types/*"],
-      "guard/*": ["src/main/guard/*"]
+      "controller/*": ["src/main/controller/*.controller"],
+      "service/*": ["src/main/service/*.service"],
+      "module/*": ["src/main/module/*.module"],
+      "entity/*": ["src/main/entity/*.entity"], 
+      "types/*": ["src/main/types/*.type"],
+      "guard/*": ["src/main/guard/*.guard"]
     }
   }
 }

@@ -1,12 +1,10 @@
 import { Body, Controller, Header, HttpCode, HttpException, Post } from "@nestjs/common";
-import { AuthService } from "service/auth.service";
-import { RegisterDto } from "types/register.dto";
+import { AuthService } from "service/auth";
+import { RegisterDto } from "types/register";
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/register')
   @HttpCode(200)
@@ -16,13 +14,7 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(200)
-  @Header('Access-Control-Allow-Origin', '*')
-  @Header('Access-Control-Allow-Headers', 'Content-Type')
   async login(@Body() loginDto: { login: string, password: string }) {
-    try {
-      return await this.authService.login(loginDto);
-    }catch(error: any) {
-      throw new HttpException(error.message, error.status);
-    }
+    return await this.authService.login(loginDto);
   }
 }
