@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Between, Like, Repository } from "typeorm";
-import { TodoEntity } from "entity/todo.entity";
-import { TodoType } from "types/todo.type";
+import { TodoEntity } from "entity/todo";
+import { TodoType } from "types/todo";
 
 @Injectable()
 export class TasksService {
@@ -121,7 +121,6 @@ export class TasksService {
   }
 
     async getTasksByWeek(week: string): Promise<{ message: string, tasks: TodoEntity[] }> {
-    // Преобразуем строку в объект Date
     const parseDate = (dateString: string): Date => {
       const [month, day, year] = dateString.split(" ");
       return new Date(`${month} ${parseInt(day)}, ${year}`);
@@ -132,12 +131,10 @@ export class TasksService {
       throw new Error("Invalid date format");
     }
 
-    // Начало и конец недели
     const startDate = new Date(parsedDate);
     const endDate = new Date(parsedDate);
     endDate.setDate(startDate.getDate() + 6);
 
-    // Получение задач за неделю
     const tasks = await this.todoRepository.find({
       where: {
         createdAtDate: Between(startDate, endDate)

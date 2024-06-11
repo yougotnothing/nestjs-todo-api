@@ -12,10 +12,10 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { TodoEntity } from "entity/todo.entity";
-import { TasksService } from "service/tasks.service";
-import { TodoType } from "types/todo.type";
-import { Auth } from "guard/auth.guard";
+import { TodoEntity } from "entity/todo";
+import { TasksService } from "service/tasks";
+import { TodoType } from "types/todo";
+import { Auth } from "guard/auth";
 
 @Controller('tasks')
 export class TasksController {

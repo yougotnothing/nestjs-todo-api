@@ -1,39 +1,40 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "entity/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserEntity } from "entity/user";
+import { TodoType, TodoTypeEnum } from "types/todo";
 
-@Entity()
+@Entity("todo_entity")
 export class TodoEntity {
-  @Column()
+  @Column("varchar")
   header: string;
 
-  @Column()
+  @Column("varchar")
   creator: string;
 
-  @Column()
+  @Column("varchar")
   till: string;
 
-  @Column()
+  @Column("varchar")
   from: string;
 
-  @Column()
+  @Column("varchar")
   createdAt: string;
 
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "enum", enum: ["school", "work", "shop", "read", "work out"] })
-  type: "school" | "work" | "shop" | "read" | "work out";
+  @Column("enum", { enum: TodoTypeEnum })
+  type: TodoType;
 
-  @Column({ type: 'boolean', default: false })
+  @Column("boolean", { default: false })
   isChecked: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column("boolean", { default: false })
   important: boolean;
 
-  @Column({ type: 'jsonb', default: [] })
+  @Column("jsonb", { default: [] })
   tasks: Array<{ isChecked: boolean, content: string }>;
 
-  @Column({ type: 'timestamp', default: new Date() })
+  @Column("timestamp", { default: new Date() })
   createdAtDate: Date;
 
   @ManyToOne(() => UserEntity, user => user.tasks)

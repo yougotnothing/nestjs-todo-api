@@ -3,15 +3,15 @@ import { ormconfig } from 'dbconfig';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from 'controller/auth.controller';
-import { TasksController } from 'controller/tasks.controller';
-import { UserController } from 'controller/user.controller';
-import { TodoEntity } from 'entity/todo.entity';
-import { UserEntity } from 'entity/user.entity';
-import { AuthService } from 'service/auth.service';
-import { TasksService } from 'service/tasks.service';
-import { UserService } from 'service/user.service';
-import { Auth } from 'guard/auth.guard';
+import { AuthController } from 'controller/auth';
+import { TasksController } from 'controller/tasks';
+import { UserController } from 'controller/user';
+import { TodoEntity } from 'entity/todo';
+import { UserEntity } from 'entity/user';
+import { AuthService } from 'service/auth';
+import { TasksService } from 'service/tasks';
+import { UserService } from 'service/user';
+import { Auth } from 'guard/auth';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 
@@ -22,7 +22,7 @@ import { MulterModule } from '@nestjs/platform-express';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ormconfig(configService),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     MulterModule.register({
       dest: './uploads/'

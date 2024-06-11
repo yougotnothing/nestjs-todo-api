@@ -1,25 +1,26 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
-import { TodoEntity } from "entity/todo.entity";
+import { TodoEntity } from "entity/todo";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
-@Entity()
+@Entity("user_entity")
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column("varchar")
   name: string;
 
-  @Column()
+  @Column("varchar")
   email: string;
 
-  @Column()
+  @Column("varchar")
   password: string;
 
-  @Column({ type: 'bytea', nullable: false })
+  @Column("bytea")
   avatar: Buffer;
 
-  @Column({ default: false })
+  @Column("boolean", { default: false })
   isHaveAvatar: boolean;
 
   @OneToMany(() => TodoEntity, todo => todo.user)

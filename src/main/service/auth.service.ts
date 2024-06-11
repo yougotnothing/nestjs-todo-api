@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "entity/user.entity";
-import { RegisterDto } from "types/register.dto";
+import { UserEntity } from "entity/user";
+import { RegisterDto } from "types/register";
 
 @Injectable()
 export class AuthService {
@@ -42,10 +42,11 @@ export class AuthService {
     const { login, password } = loginDto;
     let user: UserEntity;
     
-    
     if(!regex.test(login)) {
       user = await this.userRepository.findOneBy({ name: login });
-    }else user = await this.userRepository.findOneBy({ email: login });
+    }else{
+      user = await this.userRepository.findOneBy({ email: login })
+    }
 
     if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
     if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);

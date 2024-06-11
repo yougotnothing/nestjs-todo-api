@@ -2,7 +2,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "entity/user.entity";
+import { UserEntity } from "entity/user";
 
 @Injectable()
 export class Auth extends AuthGuard('basic') {

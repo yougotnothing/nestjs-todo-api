@@ -11,14 +11,14 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
-  Header,
-  Res
+  Res,
 } from "@nestjs/common";
-import { UserService } from "service/user.service";
-import { Auth } from "guard/auth.guard";
+import { UserService } from "service/user";
+import { Auth } from "guard/auth";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import * as multer from "multer";
+import { MulterFile } from "types/multer-file";
 
 @Controller('user')
 export class UserController {
@@ -28,11 +28,9 @@ export class UserController {
   ) {}
 
   @Post('/change-avatar')
-  @UseInterceptors(FileInterceptor('avatar', {
-    storage: multer.memoryStorage()
-  }))
   @HttpCode(200)
-  async changeAvatar(@UploadedFile() avatar: Express.Multer.File, @Req() req: Request) {
+  @UseInterceptors(FileInterceptor('avatar', { storage: multer.memoryStorage() }))
+  async changeAvatar(@UploadedFile() avatar: MulterFile, @Req() req: Request) {
     if(!avatar) throw new HttpException("file is empty.", HttpStatus.BAD_REQUEST);
 
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
@@ -44,12 +42,15 @@ export class UserController {
 
   @Patch('/change-name')
   @HttpCode(200)
-  async changeName(@Body() name: string, @Query('id') id: number, @Req() req: Request) {
+  async changeName(
+    @Body() body: { newName: string },
+    @Req() req: Request
+  ) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
 
     if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
-    return await this.userService.changeName(id, name);
+    return await this.userService.changeName(body.newName, req.headers['X-User-Id']);
   }
 
   @Get('/get-tasks')
@@ -72,7 +73,6 @@ export class UserController {
   @HttpCode(200)
   async changePassword(
     @Req() req: Request,
-    @Query('id') id: number,
     @Body() body: { password: string, confirmPassword: string }
   ) {
     const { password, confirmPassword } = body;
@@ -81,12 +81,16 @@ export class UserController {
     if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
     if(password !== confirmPassword) throw new HttpException("passwords don't match.", 443);
 
-    return await this.userService.changePassword(id, password);
+    return await this.userService.changePassword(password, req.headers['X-User-Id']);
   }
 
   @Get('/get-avatar')
   @HttpCode(200)
-  async getAvatar(@Query('id') id: number, @Query('time') time: Date, @Res() res: Response) {
+  async getAvatar(
+    @Query('id') id: number,
+    @Query('time') time: Date,
+    @Res() res: Response
+  ) {
     const avatar = await this.userService.getAvatar(id, time);
 
     res.setHeader('Content-Type', 'image/jpeg');

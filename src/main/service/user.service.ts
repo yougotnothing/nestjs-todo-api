@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { UserEntity } from "entity/user.entity";
-import { TodoEntity } from "entity/todo.entity";
-import { PublicUserDto } from "types/public.user.dto";
+import { UserEntity } from "entity/user";
+import { TodoEntity } from "entity/todo";
+import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
@@ -29,13 +29,22 @@ export class UserService {
     };
   }
 
-  async changeName(id: number, name: string): Promise<{ message: string }> {
+  async changeName(newName: string, id: number): Promise<{ message: string, token: string }> {
     const user = await this.userRepository.findOneBy({ id });
-    user.name = name;
+    
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    if(newName === user.name) throw new HttpException("Name can't be same.", 440);
+    if(newName.length < 3) throw new HttpException("Name must be less than 3 characters.", 441);
+    if(newName.length > 20) throw new HttpException("Name must be less than 20 characters.", 442);
+    if(newName === "admin") throw new HttpException("Name can't be admin.", 443);
+    
+    user.name = newName;
+
     await this.userRepository.save(user);
 
     return {
-      message: "name changed."
+      message: `name changed to ${user.name}`,
+      token: Buffer.from(`${user.name}:${user.password}`).toString('base64')
     }
   }
 
@@ -70,8 +79,8 @@ export class UserService {
     }
   }
 
-  async changePassword(id: number, password: string): Promise<{ message: string, token: string }> {
-    const user = await this.userRepository.findOneBy({ id });
+  async changePassword(password: string, name: string): Promise<{ message: string, token: string }> {
+    const user = await this.userRepository.findOneBy({ name });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
     if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
