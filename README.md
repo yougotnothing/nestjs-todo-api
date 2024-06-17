@@ -23,6 +23,8 @@ DB_PASSWORD=... #your postgres password
 DB_USERNAME=... #your postgres username
 DB_PORT=... #your postgres port
 DB_HOST=localhost #this is default value, you can change it if you run don't run app on localhost
+
+CORS_ORIGIN=... #your frontend URL/URLS
 ```
 
 <br id="installation">
@@ -208,7 +210,7 @@ yarn build
     - `status`: *number*
     - `message`: *string*
 
-- ***`GET`*** `tasks/get-tasks-by-substring` *(deprecated)*
+- ***`GET`*** `tasks/get-tasks-by-substring`
   - get tasks by substring
   - **Request Headers**
     - `Authorization`: *`Basic` string*
@@ -273,7 +275,7 @@ yarn build
 
 ### <a href="#docs__types__Task">Task[]</a>
 
-- ***`GET`*** `tasks/get-tasks-by-week` *(deprecated)*
+- ***`GET`*** `tasks/get-tasks-by-week`
   - get tasks by week
   - **Request Headers**
     - `Authorization`: *`Basic` string*
