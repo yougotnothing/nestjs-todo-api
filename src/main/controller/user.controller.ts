@@ -31,10 +31,9 @@ export class UserController {
   @HttpCode(200)
   @UseInterceptors(FileInterceptor('avatar', { storage: multer.memoryStorage() }))
   async changeAvatar(@UploadedFile() avatar: MulterFile, @Req() req: Request) {
-    if(!avatar) throw new HttpException("file is empty.", HttpStatus.BAD_REQUEST);
-
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
 
+    if(!avatar) throw new HttpException("file is empty.", HttpStatus.BAD_REQUEST);
     if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.userService.changeAvatar(avatar.buffer, validation.name);

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Between, Like, Repository } from "typeorm";
 import { TodoEntity } from "entity/todo";
 import { TodoType } from "types/todo";
+import { CreateTodoDto } from "types/create-todo";
 
 @Injectable()
 export class TasksService {
@@ -11,10 +12,19 @@ export class TasksService {
     private readonly todoRepository: Repository<TodoEntity>
   ) {}
 
-  async createTask(task: TodoEntity): Promise<{ message: string }> {
+  async createTask(task: CreateTodoDto, name: string): Promise<{ message: string }> {
+    if(!name) throw new HttpException("name is empty.", HttpStatus.BAD_REQUEST);
+
     const task_ = new TodoEntity();
+
+    task_.creator = name;
     task_.header = task.header;
-    task_.isChecked = false;
+    task_.isChecked = task.isChecked;
+    task_.type = task.type;
+    task_.createdAt = task.createdAt;
+    task_.from = task.from;
+    task_.till = task.till;
+    task_.important = task.important;
 
     await this.todoRepository.save(task_);
 
@@ -53,10 +63,7 @@ export class TasksService {
   async getTasksBySubstring(substring: string): Promise<{ message: string, tasks: TodoEntity[] }> {
     const tasks = await this.todoRepository.find({ where: { header: Like(`%${substring}%`) } });
 
-    if(!tasks.length) return {
-      message: "user has no tasks.",
-      tasks: []
-    }
+    if(!tasks.length) throw new HttpException("user has no tasks.", HttpStatus.NOT_FOUND);
 
     return {
       message: `tasks by substring ${substring}:`,

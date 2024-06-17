@@ -7,6 +7,7 @@ import {
   HttpException,
   HttpStatus,
   Patch,
+  Post,
   Query,
   Req
 } from "@nestjs/common";
@@ -16,6 +17,7 @@ import { TodoEntity } from "entity/todo";
 import { TasksService } from "service/tasks";
 import { TodoType } from "types/todo";
 import { Auth } from "guard/auth";
+import { CreateTodoDto } from "types/create-todo";
 
 @Controller('tasks')
 export class TasksController {
@@ -25,6 +27,16 @@ export class TasksController {
     private readonly tasksService: TasksService,
     private readonly auth: Auth
   ) {}
+
+  @Post('/create-task')
+  @HttpCode(200)
+  async createTask(@Body() body: { task: CreateTodoDto }, @Req() req: Request) {
+    const { name, isValid } = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.tasksService.createTask(body.task, name);
+  }
 
   @Patch('/change-header')
   @HttpCode(200)
@@ -52,12 +64,10 @@ export class TasksController {
 
   @Get('/get-tasks-by-substring')
   @HttpCode(200)
-  async getTasks(@Query() query: { id?: number, substring: string }, @Req() req: Request) {
+  async getTasks(@Query() query: { substring: string }, @Req() req: Request) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-    const todo = await this.todoRepository.findOneBy({ id: query.id });
 
     if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-    if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.getTasksBySubstring(query.substring);
   }
