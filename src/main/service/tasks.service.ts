@@ -63,7 +63,12 @@ export class TasksService {
   async getTasksBySubstring(substring: string): Promise<{ message: string, tasks: TodoEntity[] }> {
     const tasks = await this.todoRepository.find({ where: { header: Like(`%${substring}%`) } });
 
-    if(!tasks.length) throw new HttpException("user has no tasks.", HttpStatus.NOT_FOUND);
+    if(!substring.trim().length) {
+      return {
+        message: "substring cannot be empty.",
+        tasks: []
+      }
+    }
 
     return {
       message: `tasks by substring ${substring}:`,

@@ -67,6 +67,7 @@ export class TasksController {
   async getTasks(@Query() query: { substring: string }, @Req() req: Request) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
 
+    if(!query.substring.trim().length) throw new HttpException("substring cannot be empty.", 441);
     if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.tasksService.getTasksBySubstring(query.substring);
