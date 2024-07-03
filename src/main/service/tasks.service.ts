@@ -14,6 +14,8 @@ export class TasksService {
 
   async createTask(task: CreateTodoDto, name: string): Promise<{ message: string }> {
     if(!name) throw new HttpException("name is empty.", HttpStatus.BAD_REQUEST);
+    if(!task) throw new HttpException("task is empty.", HttpStatus.BAD_REQUEST);
+    if(!task.header.length) throw new HttpException("header cannot be empty.", HttpStatus.BAD_REQUEST);
 
     const task_ = new TodoEntity();
 
@@ -139,9 +141,7 @@ export class TasksService {
     };
 
     const parsedDate = parseDate(week);
-    if (isNaN(parsedDate.getTime())) {
-      throw new Error("Invalid date format");
-    }
+    if(isNaN(parsedDate.getTime())) throw new Error("Invalid date format");
 
     const startDate = new Date(parsedDate);
     const endDate = new Date(parsedDate);

@@ -8,7 +8,7 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column("varchar")
+  @Column("varchar", { unique: true })
   name: string;
 
   @Column("varchar")

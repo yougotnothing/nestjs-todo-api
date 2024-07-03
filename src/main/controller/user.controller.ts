@@ -49,7 +49,7 @@ export class UserController {
 
     if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
-    return await this.userService.changeName(body.newName, req.headers['X-User-Id']);
+    return await this.userService.changeName(body.newName, req.headers['X-User-Id'], req.headers['X-User-Password']);
   }
 
   @Get('/get-tasks')

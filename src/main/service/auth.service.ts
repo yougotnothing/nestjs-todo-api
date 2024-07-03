@@ -41,17 +41,17 @@ export class AuthService {
     const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const { login, password } = loginDto;
     let user: UserEntity;
-    
-    if(!regex.test(login)) {
-      user = await this.userRepository.findOneBy({ name: login });
-    }else{
+
+    if(regex.test(login)) {
       user = await this.userRepository.findOneBy({ email: login })
+    }else{
+      user = await this.userRepository.findOneBy({ name: login });
     }
 
     if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
-    if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
+    if(password.length < 8) throw new HttpException("Password must be less than 8 characters.", 440);
 
-    const isMatching: boolean = await user.comparePassword(password);
+    const isMatching = await user.comparePassword(password);
 
     if(!isMatching) throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
 
