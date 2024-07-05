@@ -21,9 +21,10 @@
       "controller/*": ["src/main/controller/*.controller"],
       "service/*": ["src/main/service/*.service"],
       "module/*": ["src/main/module/*.module"],
-      "entity/*": ["src/main/entity/*.entity"], 
+      "entity/*": ["src/main/entity/*.entity"],
       "types/*": ["src/main/types/*.type"],
-      "guard/*": ["src/main/guard/*.guard"]
+      "guard/*": ["src/main/guard/*.guard"],
+      "mail/*": ["src/main/mail/*.hbs"]
     }
   }
 }

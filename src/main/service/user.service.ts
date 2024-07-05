@@ -5,6 +5,7 @@ import { UserEntity } from "entity/user";
 import { TodoEntity } from "entity/todo";
 import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
+import { Auth } from "guard/auth";
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
     private readonly todoRepository: Repository<TodoEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly auth: Auth
   ) {}
 
   async changeAvatar(avatar: Buffer, name: string): Promise<{ message: string }> {

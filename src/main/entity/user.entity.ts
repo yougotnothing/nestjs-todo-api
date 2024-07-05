@@ -14,6 +14,9 @@ export class UserEntity {
   @Column("varchar")
   email: string;
 
+  @Column("boolean", { default: false })
+  isVerified: boolean;
+
   @Column("varchar")
   password: string;
 

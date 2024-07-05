@@ -14,6 +14,10 @@ import { UserService } from 'service/user';
 import { Auth } from 'guard/auth';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailService } from 'service/mail';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -32,6 +36,30 @@ import { MulterModule } from '@nestjs/platform-express';
       envFilePath: '.env',
       isGlobal: true,
       expandVariables: true
+    }),
+    MailerModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>('MAIL_HOST'),
+          secure: configService.get<boolean>('MAIL_SECURE'),
+          port: configService.get<number>('MAIL_PORT'),
+          auth: {
+            user: configService.get<string>('MAIL_USER'),
+            pass: configService.get<string>('MAIL_PASSWORD'),
+          }
+        },
+        defaults: {
+          from: "'No Reply' <noreply@example.com>",
+        },
+        template: {
+          dir: join(__dirname, 'main/mail'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true
+          }
+        }
+      }),
+      inject: [ConfigService]
     })
   ],
   controllers: [
@@ -45,7 +73,8 @@ import { MulterModule } from '@nestjs/platform-express';
     AppService,
     UserService,
     TasksService,
-    Auth
+    Auth,
+    MailService
   ]
 })
 export class AppModule {}

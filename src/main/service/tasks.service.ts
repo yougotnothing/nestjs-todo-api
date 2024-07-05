@@ -9,7 +9,7 @@ import { CreateTodoDto } from "types/create-todo";
 export class TasksService {
   constructor(
     @InjectRepository(TodoEntity)
-    private readonly todoRepository: Repository<TodoEntity>
+    private readonly todoRepository: Repository<TodoEntity>,
   ) {}
 
   async createTask(task: CreateTodoDto, name: string): Promise<{ message: string }> {
@@ -177,5 +177,21 @@ export class TasksService {
       message: "tasks length retrieved successfully.",
       tasks: tasksLength
     };
+  }
+
+  async getImportantTasks(name: string): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.find({ where: { important: true, creator: name } });
+
+    if(!tasks.length) {
+      return {
+        message: "user has no important tasks.",
+        tasks: []
+      }
+    }
+
+    return {
+      message: "important tasks:",
+      tasks: tasks
+    }
   }
 }

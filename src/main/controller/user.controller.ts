@@ -95,4 +95,10 @@ export class UserController {
     res.setHeader('Content-Type', 'image/jpeg');
     res.send(avatar);
   }
+
+  @Post('/verify-email')
+  @HttpCode(200)
+  async verifyEmail(@Query('token') token: string) {
+
+  }
 }

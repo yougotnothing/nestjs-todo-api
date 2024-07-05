@@ -62,7 +62,7 @@ export class TasksController {
     return await this.tasksService.deleteTask(id);
   }
 
-  @Get('/get-tasks-by-substring')
+  @Get('/tasks-by-substring')
   @HttpCode(200)
   async getTasks(@Query() query: { substring: string }, @Req() req: Request) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
@@ -73,7 +73,7 @@ export class TasksController {
     return await this.tasksService.getTasksBySubstring(query.substring);
   }
 
-  @Get('/get-tasks-by-type')
+  @Get('/tasks-by-type')
   @HttpCode(200)
   async getTasksByType(@Query('type') type: TodoType, @Req() req: Request) {
     const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
@@ -138,5 +138,15 @@ export class TasksController {
     if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.tasksService.getTasksLength();
+  }
+
+  @Get('/important-tasks')
+  @HttpCode(200)
+  async getImportantTasks(@Req() req: Request) {
+    const { isValid, name } = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+
+    if(!isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
+
+    return await this.tasksService.getImportantTasks(name);
   }
 }

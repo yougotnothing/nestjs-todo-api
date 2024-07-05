@@ -4,12 +4,14 @@ import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { RegisterDto } from "types/register";
+import { MailService } from "./mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly mailService: MailService
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const { email, name, password } = user_dto;
@@ -29,7 +31,8 @@ export class AuthService {
       user.avatar = Buffer.from("");
       
       await this.userRepository.save(user);
-      
+      await this.mailService.sendVerifyEmail(`Basic ${Buffer.from(`${user.name}:${password}`).toString('base64')}`);
+
       return {
         status: 200,
         message: 'you have been registered!'
@@ -43,7 +46,7 @@ export class AuthService {
     let user: UserEntity;
 
     if(regex.test(login)) {
-      user = await this.userRepository.findOneBy({ email: login })
+      user = await this.userRepository.findOneBy({ email: login });
     }else{
       user = await this.userRepository.findOneBy({ name: login });
     }
