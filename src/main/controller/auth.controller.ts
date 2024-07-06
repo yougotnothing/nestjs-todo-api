@@ -1,4 +1,5 @@
-import { Body, Controller, Header, HttpCode, HttpException, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Query, Render, Req, Res, UseGuards } from "@nestjs/common";
+import { Auth } from "guard/auth";
 import { AuthService } from "service/auth";
 import { MailService } from "service/mail";
 import { RegisterDto } from "types/register";
@@ -20,11 +21,5 @@ export class AuthController {
   @HttpCode(200)
   async login(@Body() loginDto: { login: string, password: string }) {
     return await this.authService.login(loginDto);
-  }
-
-  @Post('/verify-email')
-  @HttpCode(200)
-  async verifyEmail(@Query('token') token: string) {
-    return await this.mailService.sendVerifyEmail(token);
   }
 }

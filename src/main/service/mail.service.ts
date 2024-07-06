@@ -9,28 +9,36 @@ import { Auth } from "guard/auth";
 @Injectable()
 export class MailService {
   constructor(
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService,
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    private readonly auth: Auth
+    private readonly userRepository: Repository<UserEntity>
   ) {}
 
-  async sendVerifyEmail(token: string): Promise<void> {
-    const { isValid, name } = await this.auth.validate(token);
+  async sendVerifyEmailMessage(token: string): Promise<void> {
+    // await this.mailerService.sendMail({
+    //   to: user.email,
+    //   subject: 'Verify your email',
+    //   template: 'verify-email',
+    //   context: {
+    //     name: user.name,
+    //     url: `${this.configService.get<string>('API_URL')}/auth/verify-email?token=${token}`
+    //   }
+    // })
+  }
 
-    if(!isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+  async verifyEmail(token: string): Promise<void> {
+    // const { isValid, name } = await this.auth.validate(token);
 
-    const user = await this.userRepository.findOneBy({ name });
+    // // if(!isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
 
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: 'Verify your email',
-      template: 'verify-email',
-      context: {
-        name: user.name,
-        url: `${this.configService.get<string>('API_URL')}/auth/verify-email?token=${token}`
-      }
-    })
+    // const user = await this.userRepository.findOneBy({ name });
+
+    // // if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    // // if(user.isVerified) throw new HttpException("email already verified.", HttpStatus.BAD_REQUEST);
+
+    // // await this.userRepository.update(user.id, { isVerified: true });
+
+    // return {
+    //   name: user.name
+    // }
   }
 }

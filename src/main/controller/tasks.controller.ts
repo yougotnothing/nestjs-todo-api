@@ -9,7 +9,8 @@ import {
   Patch,
   Post,
   Query,
-  Req
+  Req,
+  UseGuards
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -25,85 +26,73 @@ export class TasksController {
     @InjectRepository(TodoEntity)
     private readonly todoRepository: Repository<TodoEntity>,
     private readonly tasksService: TasksService,
-    private readonly auth: Auth
   ) {}
 
   @Post('/create-task')
+  @UseGuards(Auth)
   @HttpCode(200)
   async createTask(@Body() body: { task: CreateTodoDto }, @Req() req: Request) {
-    const { name, isValid } = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-
-    if(!isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-
-    return await this.tasksService.createTask(body.task, name);
+    return await this.tasksService.createTask(body.task, req['user'].name);
   }
 
   @Patch('/change-header')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async changeHeader(@Body() body: { id: number, header: string }, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async changeHeader(@Body() body: { id: number, header: string }) {
     const todo = await this.todoRepository.findOneBy({ id: body.id });
-
-    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
-    if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
     
     return await this.tasksService.changeHeader({ ...body });
   }
 
   @Delete('/delete-task')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async deleteTask(@Query('id') id: number, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async deleteTask(@Query('id') id: number) {
     const todo = await this.todoRepository.findOneBy({ id });
 
-    if(!validation.isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.deleteTask(id);
   }
 
   @Get('/tasks-by-substring')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async getTasks(@Query() query: { substring: string }, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async getTasks(@Query() query: { substring: string }) {
 
     if(!query.substring.trim().length) throw new HttpException("substring cannot be empty.", 441);
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
 
     return await this.tasksService.getTasksBySubstring(query.substring);
   }
 
   @Get('/tasks-by-type')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async getTasksByType(@Query('type') type: TodoType, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async getTasksByType(@Query('type') type: TodoType) {
     const todo = await this.todoRepository.findBy({ type });
 
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.getTasksByType(type);
   }
 
   @Get('/today-tasks')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async getTodayTasks(@Query() query: { createdAt: string }, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async getTodayTasks(@Query() query: { createdAt: string }) {
     const todo = await this.todoRepository.findBy({ createdAt: query.createdAt }); 
 
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
 
     return await this.tasksService.getTodayTasks(query.createdAt);
   }
 
   @Get('/tasks-by-header')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async getTasksByHeader(@Query('header') header: string, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
+  async getTasksByHeader(@Query('header') header: string) {
     const todo = await this.todoRepository.findBy({ header });
 
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
     if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
     if(!header.length) throw new HttpException("header cannot be empty.", HttpStatus.BAD_REQUEST);
 
@@ -111,42 +100,27 @@ export class TasksController {
   }
 
   @Get('/month-tasks')
+  @UseGuards(Auth)
   @HttpCode(200)
-  async getMonthTasks(@Query('month') month: string, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-
+  async getMonthTasks(@Query('month') month: string) {
     return await this.tasksService.getTasksByMonth(month);
   }
 
   @Get('/week-tasks')
   @HttpCode(200)
-  async getWeekTasks(@Query('week') week: string, @Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-
+  async getWeekTasks(@Query('week') week: string) {
     return await this.tasksService.getTasksByWeek(week);
   }
 
   @Get('/tasks-length')
   @HttpCode(200)
-  async getTasksLength(@Req() req: Request) {
-    const validation = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-
-    if(!validation.isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-
+  async getTasksLength() {
     return await this.tasksService.getTasksLength();
   }
 
   @Get('/important-tasks')
   @HttpCode(200)
   async getImportantTasks(@Req() req: Request) {
-    const { isValid, name } = await this.auth.validate(req.headers['authorization'].split(' ')[1]);
-
-    if(!isValid) throw new HttpException("token invalid.", HttpStatus.UNAUTHORIZED);
-
-    return await this.tasksService.getImportantTasks(name);
+    return await this.tasksService.getImportantTasks(req['user'].name);
   }
 }

@@ -5,13 +5,15 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { RegisterDto } from "types/register";
 import { MailService } from "./mail.service";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    private readonly jwtService: JwtService
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const { email, name, password } = user_dto;
@@ -31,7 +33,7 @@ export class AuthService {
       user.avatar = Buffer.from("");
       
       await this.userRepository.save(user);
-      await this.mailService.sendVerifyEmail(`Basic ${Buffer.from(`${user.name}:${password}`).toString('base64')}`);
+      // await this.mailService.sendVerifyEmailMessage(`Basic ${this.jwtService.sign({ name: user.name, sub: user.id })}`);
 
       return {
         status: 200,
@@ -40,7 +42,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: { login: string, password: string }): Promise<{ message: string, token: string }> {
+  async login(loginDto: { login: string, password: string }): Promise<{ message: string, access_token: string }> {
     const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const { login, password } = loginDto;
     let user: UserEntity;
@@ -60,7 +62,7 @@ export class AuthService {
 
     return {
       message: "you have been loggined in!",
-      token: Buffer.from(`${user.name}:${password}`).toString('base64') 
+      access_token: this.jwtService.sign({ name: user.name, sub: user.id })
     }
   }
 }
