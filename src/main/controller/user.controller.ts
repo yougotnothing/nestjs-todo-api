@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   Res,
   UseGuards,
+  Headers
 } from "@nestjs/common";
 import { UserService } from "service/user";
 import { Auth } from "guard/auth";
@@ -21,7 +22,6 @@ import { Response } from "express";
 import * as multer from "multer";
 import { MulterFile } from "types/multer-file";
 import { JwtService } from "@nestjs/jwt";
-import { Header } from "decorator/header";
 
 @Controller('user')
 export class UserController {
@@ -45,8 +45,8 @@ export class UserController {
   @HttpCode(200)
   async changeName(
     @Body() body: { newName: string },
-    @Header('X-User-Id') id: number,
-    @Header('X-User-Password') password: string
+    @Headers('X-User-Id') id: number,
+    @Headers('X-User-Password') password: string
   ) {
     return await this.userService.changeName(body.newName, id, password);
   }
