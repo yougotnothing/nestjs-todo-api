@@ -41,14 +41,4 @@ export class Auth implements CanActivate {
     const [type, token] = request.headers['authorization']?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
-
-  async validate(token: string): Promise<{ isValid: boolean, name?: string }> {
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8').split(':');
-    const user = await this.userRepository.findOneBy({ name: encryptedToken[0] });
-    const isTokenValid = await user.comparePassword(encryptedToken[1]);
-
-    if(!isTokenValid) {
-      return { isValid: false };
-    }else return { isValid: true, name: encryptedToken[0] };
-  }
 }

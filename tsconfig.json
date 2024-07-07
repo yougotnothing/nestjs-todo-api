@@ -24,7 +24,8 @@
       "entity/*": ["src/main/entity/*.entity"],
       "types/*": ["src/main/types/*.type"],
       "guard/*": ["src/main/guard/*.guard"],
-      "mail/*": ["src/main/mail/*.hbs"]
+      "mail/*": ["src/main/mail/*.hbs"],
+      "decorator/*": ["src/main/decorator/*.decorator"]
     }
   }
 }

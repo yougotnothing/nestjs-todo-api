@@ -6,6 +6,10 @@ import { UserEntity } from "entity/user";
 import { RegisterDto } from "types/register";
 import { MailService } from "./mail.service";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { JwtTokens } from "types/jwt-tokens";
+import { JwtTokenKeys } from "types/jwt-token-keys";
+import { Response } from "express";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +17,8 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly mailService: MailService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const { email, name, password } = user_dto;
@@ -33,7 +38,7 @@ export class AuthService {
       user.avatar = Buffer.from("");
       
       await this.userRepository.save(user);
-      // await this.mailService.sendVerifyEmailMessage(`Basic ${this.jwtService.sign({ name: user.name, sub: user.id })}`);
+      // await this.mailService.sendVerifyEmailMessage();
 
       return {
         status: 200,
@@ -42,7 +47,36 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: { login: string, password: string }): Promise<{ message: string, access_token: string }> {
+  signToken(keys: JwtTokenKeys, type: 'access' | 'refresh'): string {
+    return this.jwtService.sign(keys, {
+      expiresIn:
+        type === 'access' 
+        ? this.configService.get<string>('JWT_ACCESS_EXPIRES-IN')
+        : this.configService.get<string>('JWT_REFRESH_EXPIRES-IN'),
+    });
+  }
+
+  async refresh(refreshToken: string, res: Response): Promise<JwtTokens & { message: string }> {
+    const { name, sub } = await this.jwtService.verifyAsync<{ name: string, sub: number }>(refreshToken);
+
+    res.cookie(
+      'refresh_token',
+      this.signToken({ name, sub }, 'refresh'),
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+      }
+    );
+
+    return {
+      message: "your tokens have been refreshed.",
+      access_token: this.signToken({ name, sub }, 'access'),
+    }
+  }
+
+  async login(loginDto: { login: string, password: string }): Promise<JwtTokens & { message: string }> {
     const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const { login, password } = loginDto;
     let user: UserEntity;
@@ -62,7 +96,8 @@ export class AuthService {
 
     return {
       message: "you have been loggined in!",
-      access_token: this.jwtService.sign({ name: user.name, sub: user.id })
+      access_token: this.signToken({ name: user.name, sub: user.id }, 'access'),
+      refresh_token: this.signToken({ name: user.name, sub: user.id }, 'refresh'),
     }
   }
 }

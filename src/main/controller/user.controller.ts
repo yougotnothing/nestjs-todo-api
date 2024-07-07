@@ -20,11 +20,14 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import * as multer from "multer";
 import { MulterFile } from "types/multer-file";
+import { JwtService } from "@nestjs/jwt";
+import { Header } from "decorator/header";
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
+    private readonly jwtService: JwtService
   ) {}
 
   @Post('/change-avatar')
@@ -42,9 +45,10 @@ export class UserController {
   @HttpCode(200)
   async changeName(
     @Body() body: { newName: string },
-    @Req() req: Request
+    @Header('X-User-Id') id: number,
+    @Header('X-User-Password') password: string
   ) {
-    return await this.userService.changeName(body.newName, req.headers['X-User-Id'], req.headers['X-User-Password']);
+    return await this.userService.changeName(body.newName, id, password);
   }
 
   @Get('/get-tasks')
@@ -90,6 +94,6 @@ export class UserController {
   @Post('/verify-email')
   @HttpCode(200)
   async verifyEmail(@Query('token') token: string) {
-
+    
   }
 }
