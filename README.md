@@ -25,6 +25,16 @@ DB_PORT=... #your postgres port
 DB_HOST=localhost #this is default value, you can change it if you run don't run app on localhost
 
 CORS_ORIGIN=... #your frontend URL/URLS
+
+MAIL_HOST=... #your mail smtp host
+MAIL_PORT=465 #your mail smtp port
+MAIL_USER=... #your mail (example: mail@gmail.com)
+MAIL_PASSWORD=... #your mail password
+MAIL_SECURE=true
+
+JWT_SECRET=... #your jwt secret key
+JWT_ACCESS_EXPIRES-IN=... #time whem access token expires in (default: 900s)
+JWT_REFRESH_EXPIRES-IN=... #time when refresh token expires in (default: 7d)
 ```
 
 <br id="installation">
@@ -85,7 +95,6 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `token`: *string*
 
 - ***`POST`*** `/auth/login`
   - login a user
@@ -95,7 +104,7 @@ yarn build
   - **Response**
     - `status`: *number*
     - `message`: *string*
-    - `token`: *string*
+    - `access_token`: *string*
 
 <br id="docs__user">
 
@@ -104,7 +113,7 @@ yarn build
 - ***`POST`*** `/user/change-avatar`
   - changes user avatar
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Request Body**
     - `avatar`: *string*
   - **Response**
@@ -114,7 +123,7 @@ yarn build
 - ***`PATCH`*** `/user/change-name`
   - changes user name
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Request Body**
     - `id`: *number*
     - `name`: *string*
@@ -125,7 +134,7 @@ yarn build
 - ***`GET`*** `/user/get-tasks`
   - get all user tasks
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Response**
     - `status`: *number*
     - `message`: *string*
@@ -153,7 +162,7 @@ yarn build
 - ***`GET`*** `/user/get-user`
   - get public user DTO by token
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Response**
     - `status`: *number*
     - `message`: *string*
@@ -174,7 +183,7 @@ yarn build
 - ***`PATCH`*** `/user/change-password`
   - changes user password
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `id`: *number*
   - **Request Body**
@@ -192,7 +201,7 @@ yarn build
 - ***`PATCH`*** `/tasks/change-header`
   - changes task header
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Request Body**
     - `id`: *number*
     - `header`: *string*
@@ -203,7 +212,7 @@ yarn build
 - ***`DELETE`*** `/tasks/delete-task`
   - delete task
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `id`: *number* // task id
   - **Response**
@@ -213,7 +222,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-by-substring`
   - get tasks by substring
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `substring`: *string*
   - **Response**
@@ -226,7 +235,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-by-type`
   - get tasks by type
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `type`: *TodoType*
   - **Response**
@@ -239,7 +248,7 @@ yarn build
 - ***`GET`*** `tasks/get-today-tasks`
   - get today tasks
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `createdAt`: *string*
   - **Response**
@@ -252,7 +261,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-by-header`
   - get tasks by header
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `header`: *string*
   - **Response**
@@ -265,7 +274,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-by-month`
   - get tasks by month
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `month`: *string*
   - **Response**
@@ -278,7 +287,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-by-week`
   - get tasks by week
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Query**
     - `week`: *string*
   - **Response**
@@ -291,7 +300,7 @@ yarn build
 - ***`GET`*** `tasks/get-tasks-length`
   - get tasks length
   - **Request Headers**
-    - `Authorization`: *`Basic` string*
+    - `Authorization`: *`Bearer` string*
   - **Response**
     - `status`: *number*
     - `message`: *string*

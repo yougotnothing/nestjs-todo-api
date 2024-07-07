@@ -21,13 +21,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import * as multer from "multer";
 import { MulterFile } from "types/multer-file";
-import { JwtService } from "@nestjs/jwt";
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService
   ) {}
 
   @Post('/change-avatar')
@@ -72,10 +70,10 @@ export class UserController {
     @Body() body: { password: string, confirmPassword: string }
   ) {
     const { password, confirmPassword } = body;
-    
+
     if(password !== confirmPassword) throw new HttpException("passwords don't match.", 443);
 
-    return await this.userService.changePassword(password, req.headers['X-User-Id']);
+    return await this.userService.changePassword(password, req['user'].id);
   }
 
   @Get('/get-avatar')
@@ -89,11 +87,5 @@ export class UserController {
 
     res.setHeader('Content-Type', 'image/jpeg');
     res.send(avatar);
-  }
-
-  @Post('/verify-email')
-  @HttpCode(200)
-  async verifyEmail(@Query('token') token: string) {
-    
   }
 }

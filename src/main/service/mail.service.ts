@@ -5,40 +5,49 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { Repository } from "typeorm";
 import { Auth } from "guard/auth";
+import { AuthService } from "./auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { JwtTokenKeys } from "types/jwt-token-keys";
 
 @Injectable()
 export class MailService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
+    private readonly jwtService: JwtService
   ) {}
 
   async sendVerifyEmailMessage(token: string): Promise<void> {
-    // await this.mailerService.sendMail({
-    //   to: user.email,
-    //   subject: 'Verify your email',
-    //   template: 'verify-email',
-    //   context: {
-    //     name: user.name,
-    //     url: `${this.configService.get<string>('API_URL')}/auth/verify-email?token=${token}`
-    //   }
-    // })
+    const { sub } = await this.jwtService.verifyAsync<JwtTokenKeys>(token);
+
+    const user = await this.userRepository.findOneBy({ id: sub });
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Verify your email',
+      template: 'verify-email',
+      context: {
+        name: user.name,
+        url: `${this.configService.get<string>('API_URL')}/mail/verify-email?token=${token}`
+      }
+    })
   }
 
-  async verifyEmail(token: string): Promise<void> {
-    // const { isValid, name } = await this.auth.validate(token);
+  async verifyEmail(token: string): Promise<{ user: string, message: string }> {
+    const { sub } = await this.jwtService.verifyAsync<JwtTokenKeys>(token);
 
-    // // if(!isValid) throw new HttpException("token is invalid.", HttpStatus.UNAUTHORIZED);
+    const user = await this.userRepository.findOneBy({ id: sub });
 
-    // const user = await this.userRepository.findOneBy({ name });
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    if(user.isVerified) return { user: user.name, message: "your email already verified." };
 
-    // // if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
-    // // if(user.isVerified) throw new HttpException("email already verified.", HttpStatus.BAD_REQUEST);
+    await this.userRepository.update(user.id, { isVerified: true });
 
-    // // await this.userRepository.update(user.id, { isVerified: true });
-
-    // return {
-    //   name: user.name
-    // }
+    return {
+      user: user.name,
+      message: "your email has been verified."
+    }
   }
 }

@@ -5,6 +5,7 @@ import { UserEntity } from "entity/user";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
+import { JwtTokenKeys } from "types/jwt-token-keys";
 
 @Injectable()
 export class Auth implements CanActivate {
@@ -16,13 +17,13 @@ export class Auth implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(request);
 
     if(!token) throw new UnauthorizedException();
 
     try {
-      const payload = await this.jwtService.verifyAsync(
+      const payload = await this.jwtService.verifyAsync<JwtTokenKeys>(
         token,
         {
           secret: this.configService.get<string>('JWT_SECRET')

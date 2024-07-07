@@ -6,6 +6,7 @@ import { TodoEntity } from "entity/todo";
 import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { JwtTokenKeys } from "types/jwt-token-keys";
 
 @Injectable()
 export class UserService {
