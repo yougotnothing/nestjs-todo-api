@@ -1,14 +1,15 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "entity/user";
 import { TodoType, TodoTypeEnum } from "types/todo";
+import { UUID } from "crypto";
 
 @Entity("todo_entity")
 export class TodoEntity {
   @Column("varchar")
   header: string;
 
-  @Column("varchar")
-  creator: string;
+  @Column("uuid")
+  creator: UUID;
 
   @Column("varchar")
   till: string;

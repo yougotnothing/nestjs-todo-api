@@ -3,5 +3,5 @@ export interface PublicUserDto {
   name: string;
   email: string;
   avatar: string;
-  id: number;
+  id: string;
 }

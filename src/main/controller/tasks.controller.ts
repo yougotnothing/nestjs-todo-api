@@ -17,7 +17,7 @@ import { Repository } from "typeorm";
 import { TodoEntity } from "entity/todo";
 import { TasksService } from "service/tasks";
 import { TodoType } from "types/todo";
-import { Auth } from "guard/auth";
+import { AuthGuard } from "guard/auth";
 import { CreateTodoDto } from "types/create-todo";
 
 @Controller('tasks')
@@ -29,14 +29,14 @@ export class TasksController {
   ) {}
 
   @Post('/create-task')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async createTask(@Body() body: { task: CreateTodoDto }, @Req() req: Request) {
-    return await this.tasksService.createTask(body.task, req['user'].name);
+    return await this.tasksService.createTask(body.task, req['user'].id);
   }
 
   @Patch('/change-header')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async changeHeader(@Body() body: { id: number, header: string }) {
     const todo = await this.todoRepository.findOneBy({ id: body.id });
@@ -45,7 +45,7 @@ export class TasksController {
   }
 
   @Delete('/delete-task')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async deleteTask(@Query('id') id: number) {
     const todo = await this.todoRepository.findOneBy({ id });
@@ -56,7 +56,7 @@ export class TasksController {
   }
 
   @Get('/tasks-by-substring')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTasks(@Query() query: { substring: string }) {
 
@@ -66,7 +66,7 @@ export class TasksController {
   }
 
   @Get('/tasks-by-type')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTasksByType(@Query('type') type: TodoType) {
     const todo = await this.todoRepository.findBy({ type });
@@ -77,7 +77,7 @@ export class TasksController {
   }
 
   @Get('/today-tasks')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTodayTasks(@Query() query: { createdAt: string }) {
     const todo = await this.todoRepository.findBy({ createdAt: query.createdAt }); 
@@ -88,7 +88,7 @@ export class TasksController {
   }
 
   @Get('/tasks-by-header')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTasksByHeader(@Query('header') header: string) {
     const todo = await this.todoRepository.findBy({ header });
@@ -100,7 +100,7 @@ export class TasksController {
   }
 
   @Get('/month-tasks')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getMonthTasks(@Query('month') month: string) {
     return await this.tasksService.getTasksByMonth(month);
@@ -113,14 +113,15 @@ export class TasksController {
   }
 
   @Get('/tasks-length')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
-  async getTasksLength() {
-    return await this.tasksService.getTasksLength();
+  async getTasksLength(@Req() req: Request) {
+    return await this.tasksService.getTasksLength(req['user'].id);
   }
 
   @Get('/important-tasks')
   @HttpCode(200)
   async getImportantTasks(@Req() req: Request) {
-    return await this.tasksService.getImportantTasks(req['user'].name);
+    return await this.tasksService.getImportantTasks(req['user'].id);
   }
 }

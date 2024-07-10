@@ -1,11 +1,11 @@
-import { Global, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthController } from "controller/auth"; 
 import { UserEntity } from "entity/user";
 import { AuthService } from "service/auth";
-import { Auth } from "guard/auth";
+import { AuthGuard } from "guard/auth";
 import { MailService } from "service/mail";
 
 @Module({
@@ -23,7 +23,7 @@ import { MailService } from "service/mail";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, Auth, MailService],
-  exports: [AuthService, Auth, MailService, JwtModule],
+  providers: [AuthService, AuthGuard, MailService],
+  exports: [AuthService, AuthGuard, MailService, JwtModule],
 })
 export class AuthModule {}

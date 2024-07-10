@@ -4,10 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { Repository } from "typeorm";
-import { Auth } from "guard/auth";
+import { AuthGuard } from "guard/auth";
 import { AuthService } from "./auth.service";
 import { JwtService } from "@nestjs/jwt";
 import { JwtTokenKeys } from "types/jwt-token-keys";
+import { UUID } from "crypto";
 
 @Injectable()
 export class MailService {
@@ -49,5 +50,21 @@ export class MailService {
       user: user.name,
       message: "your email has been verified."
     }
+  }
+
+  async sendRestorePasswordMessage(id: UUID): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Restore your password',
+      template: 'restore-password',
+      context: {
+        name: user.name,
+        url: `${this.configService.get<string>('API_URL')}/auth/restore-password?id=${id}`
+      }
+    });
   }
 }

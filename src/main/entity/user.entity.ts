@@ -1,14 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { TodoEntity } from "entity/todo";
-import { HttpException, HttpStatus } from "@nestjs/common";
+import { UUID } from "crypto";
 
 @Entity("user_entity")
 export class UserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: UUID;
 
-  @Column("varchar", { unique: true })
+  @Column("varchar")
   name: string;
 
   @Column("varchar")
@@ -20,7 +20,7 @@ export class UserEntity {
   @Column("varchar")
   password: string;
 
-  @Column("bytea")
+  @Column("bytea", { default: Buffer.from("") })
   avatar: Buffer;
 
   @Column("boolean", { default: false })

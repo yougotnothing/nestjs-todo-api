@@ -1,5 +1,6 @@
-import { Controller, Get, Headers, HttpCode, Post, Query, Render, Req, Res, UseGuards } from "@nestjs/common";
-import { Auth } from "guard/auth";
+import { Controller, Get, HttpCode, Post, Query, Render, UseGuards } from "@nestjs/common";
+import { UUID } from "crypto";
+import { AuthGuard } from "guard/auth";
 import { MailService } from "service/mail";
 
 @Controller('mail')
@@ -14,9 +15,15 @@ export class MailController {
   }
 
   @Post('/send-verify-email-message')
-  @UseGuards(Auth)
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async sendVerifyEmailMessage(@Query('token') token: string) {
     return await this.mailService.sendVerifyEmailMessage(token);
+  }
+
+  @Post('/send-restore-password-message')
+  @HttpCode(200)
+  async sendRestorePasswordMessage(@Query('id') id: UUID) {
+    return await this.mailService.sendRestorePasswordMessage(id);
   }
 }

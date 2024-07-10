@@ -4,21 +4,20 @@ import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { RegisterDto } from "types/register";
-import { MailService } from "./mail.service";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { JwtTokens } from "types/jwt-tokens";
+import { JwtTokenPromise } from "types/jwt-tokens";
 import { JwtTokenKeys } from "types/jwt-token-keys";
 import { Response } from "express";
+import { MailService } from "./mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const { email, name, password } = user_dto;
@@ -38,7 +37,6 @@ export class AuthService {
       user.avatar = Buffer.from("");
       
       await this.userRepository.save(user);
-      // await this.mailService.sendVerifyEmailMessage();
 
       return {
         status: 200,
@@ -56,8 +54,8 @@ export class AuthService {
     });
   }
 
-  async refresh(refreshToken: string, res: Response): Promise<JwtTokens & { message: string }> {
-    const { name, sub } = await this.jwtService.verifyAsync<{ name: string, sub: number }>(refreshToken);
+  async refresh(refreshToken: string, res: Response): Promise<JwtTokenPromise> {
+    const { name, sub } = await this.jwtService.verifyAsync<JwtTokenKeys>(refreshToken);
 
     res.cookie(
       'refresh_token',
@@ -76,7 +74,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: { login: string, password: string }): Promise<JwtTokens & { message: string }> {
+  async login(loginDto: { login: string, password: string }, res: Response): Promise<JwtTokenPromise> {
     const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const { login, password } = loginDto;
     let user: UserEntity;
@@ -94,10 +92,20 @@ export class AuthService {
 
     if(!isMatching) throw new HttpException("Passwords don't match.", HttpStatus.BAD_REQUEST);
 
+    res.cookie(
+      'refresh_token',
+      this.signToken({ name: user.name, sub: user.id }, 'refresh'),
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+      }
+    );
+
     return {
-      message: "you have been loggined in!",
+      message: "you have been logged in.",
       access_token: this.signToken({ name: user.name, sub: user.id }, 'access'),
-      refresh_token: this.signToken({ name: user.name, sub: user.id }, 'refresh'),
     }
   }
 }

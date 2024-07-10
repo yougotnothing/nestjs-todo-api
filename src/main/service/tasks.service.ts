@@ -4,6 +4,7 @@ import { Between, Like, Repository } from "typeorm";
 import { TodoEntity } from "entity/todo";
 import { TodoType } from "types/todo";
 import { CreateTodoDto } from "types/create-todo";
+import { UUID } from "crypto";
 
 @Injectable()
 export class TasksService {
@@ -12,14 +13,13 @@ export class TasksService {
     private readonly todoRepository: Repository<TodoEntity>,
   ) {}
 
-  async createTask(task: CreateTodoDto, name: string): Promise<{ message: string }> {
-    if(!name) throw new HttpException("name is empty.", HttpStatus.BAD_REQUEST);
+  async createTask(task: CreateTodoDto, id: UUID): Promise<{ message: string }> {
     if(!task) throw new HttpException("task is empty.", HttpStatus.BAD_REQUEST);
     if(!task.header.length) throw new HttpException("header cannot be empty.", HttpStatus.BAD_REQUEST);
 
     const task_ = new TodoEntity();
 
-    task_.creator = name;
+    task_.creator = id;
     task_.header = task.header;
     task_.isChecked = task.isChecked;
     task_.type = task.type;
@@ -159,7 +159,7 @@ export class TasksService {
     };
   }
 
-  async getTasksLength(): Promise<{ message: string, tasks: Record<TodoType, number> }> {
+  async getTasksLength(id: UUID): Promise<{ message: string, tasks: Record<TodoType, number> }> {
     const tasks = await this.todoRepository.find();
 
     const tasksLength = tasks.reduce((acc, task) => {
@@ -179,8 +179,8 @@ export class TasksService {
     };
   }
 
-  async getImportantTasks(name: string): Promise<{ message: string, tasks: TodoEntity[] }> {
-    const tasks = await this.todoRepository.find({ where: { important: true, creator: name } });
+  async getImportantTasks(creator: UUID): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.find({ where: { important: true, creator } });
 
     if(!tasks.length) {
       return {

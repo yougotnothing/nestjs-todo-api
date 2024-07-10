@@ -1,4 +1,4 @@
-export interface JwtTokens {
+export interface JwtTokenPromise {
   access_token: string;
-  refresh_token?: string;
+  message?: string;
 }

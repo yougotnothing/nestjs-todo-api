@@ -1,4 +1,6 @@
+import { UUID } from "crypto";
+
 export interface JwtTokenKeys {
   name: string;
-  sub: number;
+  sub: UUID;
 }

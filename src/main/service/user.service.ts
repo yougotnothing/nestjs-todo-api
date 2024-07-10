@@ -6,7 +6,7 @@ import { TodoEntity } from "entity/todo";
 import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { JwtTokenKeys } from "types/jwt-token-keys";
+import { UUID } from "crypto";
 
 @Injectable()
 export class UserService {
@@ -32,7 +32,7 @@ export class UserService {
     };
   }
 
-  async changeName(newName: string, id: number, password: string): Promise<{ message: string, token: string }> {
+  async changeName(newName: string, id: UUID): Promise<{ message: string, token: string }> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
@@ -51,8 +51,8 @@ export class UserService {
     }
   }
 
-  async getTasks(username: string): Promise<{ message: string, tasks: TodoEntity[] }> {
-    const tasks = await this.todoRepository.findBy({ creator: username });
+  async getTasks(creator: UUID): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.findBy({ creator });
 
     if(!tasks.length) return {
       message: "user has no tasks.",
@@ -65,7 +65,7 @@ export class UserService {
     }
   }
 
-  async getUser(id: number): Promise<{ message: string, user: PublicUserDto }> {
+  async getUser(id: UUID): Promise<{ message: string, user: PublicUserDto }> {
     const user = await this.userRepository.findOneBy({ id });
     
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
@@ -82,22 +82,21 @@ export class UserService {
     }
   }
 
-  async changePassword(password: string, name: string): Promise<{ message: string, token: string }> {
+  async changePassword(password: string, name: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ name });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
     if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
+    if(!await bcrypt.compare(password, user.password)) throw new HttpException("Passwords don't match.", 443);
 
-    user.password = await bcrypt.hash(password, 10);
-    await this.userRepository.save(user);
+    await this.userRepository.update(user.id, { password: await bcrypt.hash(password, 10) });
 
     return {
       message: "password changed.",
-      token: Buffer.from(`${user.name}:${password}`).toString('base64') 
     }
   }
 
-  async getAvatar(id: number, time: Date): Promise<Buffer> {
+  async getAvatar(id: UUID, time: Date): Promise<Buffer> {
     const user = await this.userRepository.findOneBy({ id });
 
     console.log('time: ', time);

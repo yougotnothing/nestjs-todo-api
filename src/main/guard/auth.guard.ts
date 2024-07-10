@@ -1,18 +1,13 @@
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from "@nestjs/common";
-import { UserEntity } from "entity/user";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
 import { JwtTokenKeys } from "types/jwt-token-keys";
 
 @Injectable()
-export class Auth implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService
   ) {}
 
