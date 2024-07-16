@@ -4,8 +4,6 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { Repository } from "typeorm";
-import { AuthGuard } from "guard/auth";
-import { AuthService } from "./auth.service";
 import { JwtService } from "@nestjs/jwt";
 import { JwtTokenKeys } from "types/jwt-token-keys";
 import { UUID } from "crypto";
@@ -52,7 +50,7 @@ export class MailService {
     }
   }
 
-  async sendRestorePasswordMessage(id: UUID): Promise<void> {
+  async sendRestorePasswordEmailMessage(id: UUID): Promise<void> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);

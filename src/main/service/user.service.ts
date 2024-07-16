@@ -15,7 +15,6 @@ export class UserService {
     private readonly todoRepository: Repository<TodoEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private readonly jwtService: JwtService
   ) {}
 
   async changeAvatar(avatar: Buffer, name: string): Promise<{ message: string }> {
@@ -32,7 +31,7 @@ export class UserService {
     };
   }
 
-  async changeName(newName: string, id: UUID): Promise<{ message: string, token: string }> {
+  async changeName(newName: string, id: UUID): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
@@ -47,7 +46,6 @@ export class UserService {
 
     return {
       message: `name changed to ${user.name}`,
-      token: this.jwtService.sign({ name: user.name, sub: user.id })
     }
   }
 

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "entity/user";
 import { TodoType, TodoTypeEnum } from "types/todo";
 import { UUID } from "crypto";
@@ -7,9 +7,6 @@ import { UUID } from "crypto";
 export class TodoEntity {
   @Column("varchar")
   header: string;
-
-  @Column("uuid")
-  creator: UUID;
 
   @Column("varchar")
   till: string;
@@ -39,5 +36,5 @@ export class TodoEntity {
   createdAtDate: Date;
 
   @ManyToOne(() => UserEntity, user => user.tasks)
-  user: UserEntity;
+  creator: UUID;
 }

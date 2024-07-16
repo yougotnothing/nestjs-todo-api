@@ -25,7 +25,8 @@
       "types/*": ["src/main/types/*.type"],
       "guard/*": ["src/main/guard/*.guard"],
       "mail/*": ["src/main/mail/*.hbs"],
-      "decorator/*": ["src/main/decorator/*.decorator"]
+      "decorator/*": ["src/main/decorator/*.decorator"],
+      "strategy/*": ["src/main/strategy/*.strategy"]
     }
   }
 }

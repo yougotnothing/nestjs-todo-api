@@ -39,8 +39,6 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   async changeHeader(@Body() body: { id: number, header: string }) {
-    const todo = await this.todoRepository.findOneBy({ id: body.id });
-    
     return await this.tasksService.changeHeader({ ...body });
   }
 
@@ -69,11 +67,7 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTasksByType(@Query('type') type: TodoType) {
-    const todo = await this.todoRepository.findBy({ type });
-
-    if(!todo) throw new HttpException("tasks not found.", HttpStatus.NOT_FOUND);
-
-    return await this.tasksService.getTasksByType(type);
+    return await this.tasksService.getTasksByType(decodeURIComponent(type) as TodoType);
   }
 
   @Get('/today-tasks')

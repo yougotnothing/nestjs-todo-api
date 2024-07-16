@@ -21,9 +21,9 @@ export class MailController {
     return await this.mailService.sendVerifyEmailMessage(token);
   }
 
-  @Post('/send-restore-password-message')
+  @Post('/send-restore-password-email-message')
   @HttpCode(200)
-  async sendRestorePasswordMessage(@Query('id') id: UUID) {
-    return await this.mailService.sendRestorePasswordMessage(id);
+  async sendRestorePasswordEmailMessage(@Query('id') id: UUID) {
+    return await this.mailService.sendRestorePasswordEmailMessage(id);
   }
 }

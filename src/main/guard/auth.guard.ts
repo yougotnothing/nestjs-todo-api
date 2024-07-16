@@ -1,40 +1,21 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, CanActivate, ExecutionContext, HttpException } from "@nestjs/common";
 import { Request } from "express";
-import { JwtTokenKeys } from "types/jwt-token-keys";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
-  ) {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const token = this.extractToken(request);
+    const sid = this.extractSID(request);
 
-    if(!token) throw new UnauthorizedException();
+    console.log(sid, request.session.id);
 
-    try {
-      const payload = await this.jwtService.verifyAsync<JwtTokenKeys>(
-        token,
-        {
-          secret: this.configService.get<string>('JWT_SECRET')
-        }
-      );
-
-      request['user'] = payload;
-    }catch {
-      throw new UnauthorizedException();
-    }
+    if(sid !== request.session.id) throw new HttpException(`${request.sessionID} is not equal to ${sid}`, 401);
 
     return true;
   }
 
-  private extractToken(request: Request): string | undefined {
-    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+  private extractSID(request: Request): string | undefined {
+    const [type, sid] = request.headers['authorization']?.split(' ') ?? [];
+    return type === 'SID' ? sid : undefined;
   }
 }

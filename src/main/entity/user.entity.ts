@@ -8,6 +8,9 @@ export class UserEntity {
   @PrimaryGeneratedColumn("uuid")
   id: UUID;
 
+  @Column("varchar", { unique: true, nullable: true })
+  sessionID: string;
+
   @Column("varchar")
   name: string;
 
@@ -26,7 +29,7 @@ export class UserEntity {
   @Column("boolean", { default: false })
   isHaveAvatar: boolean;
 
-  @OneToMany(() => TodoEntity, todo => todo.user)
+  @OneToMany(() => TodoEntity, todo => todo.creator)
   tasks: TodoEntity[];
 
   async comparePassword(enteredPassword: string): Promise<boolean> {

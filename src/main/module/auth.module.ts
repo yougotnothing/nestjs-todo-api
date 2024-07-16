@@ -7,6 +7,7 @@ import { UserEntity } from "entity/user";
 import { AuthService } from "service/auth";
 import { AuthGuard } from "guard/auth";
 import { MailService } from "service/mail";
+import { AuthStrategy } from "strategy/auth";
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { MailService } from "service/mail";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard, MailService],
+  providers: [AuthService, AuthGuard, MailService, AuthStrategy],
   exports: [AuthService, AuthGuard, MailService, JwtModule],
 })
 export class AuthModule {}

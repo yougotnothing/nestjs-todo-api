@@ -79,7 +79,7 @@ export class TasksService {
   }
 
   async getTasksByType(type: TodoType): Promise<{ message: string, tasks: TodoEntity[] }> {
-    const tasks = await this.todoRepository.find({ where: { type } });
+    const tasks = await this.todoRepository.findBy({ type });
 
     if(!tasks.length) return {
       message: `user has no tasks of type ${type}.`,
