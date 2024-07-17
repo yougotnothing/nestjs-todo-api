@@ -19,6 +19,7 @@ import { TasksService } from "service/tasks";
 import { TodoType } from "types/todo";
 import { AuthGuard } from "guard/auth";
 import { CreateTodoDto } from "types/create-todo";
+import { Request } from "express";
 
 @Controller('tasks')
 export class TasksController {
@@ -32,7 +33,7 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   async createTask(@Body() body: { task: CreateTodoDto }, @Req() req: Request) {
-    return await this.tasksService.createTask(body.task, req['user'].id);
+    return await this.tasksService.createTask(body.task, req.session['user_id']);
   }
 
   @Patch('/change-header')
@@ -110,12 +111,12 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @HttpCode(200)
   async getTasksLength(@Req() req: Request) {
-    return await this.tasksService.getTasksLength(req['user'].id);
+    return await this.tasksService.getTasksLength(req.session['user_id']);
   }
 
   @Get('/important-tasks')
   @HttpCode(200)
   async getImportantTasks(@Req() req: Request) {
-    return await this.tasksService.getImportantTasks(req['user'].id);
+    return await this.tasksService.getImportantTasks(req.session['user_id']);
   }
 }

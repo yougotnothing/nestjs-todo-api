@@ -24,6 +24,7 @@ import * as multer from "multer";
 import { MulterFile } from "types/multer-file";
 import { UUID } from "crypto";
 import { ChangePasswordDto } from "types/change-password";
+import { Request } from "express";
 
 @Controller('user')
 export class UserController {
@@ -36,7 +37,7 @@ export class UserController {
   async changeAvatar(@UploadedFile() avatar: MulterFile, @Req() req: Request) {
     if(!avatar) throw new HttpException("file is empty.", HttpStatus.BAD_REQUEST);
 
-    return await this.userService.changeAvatar(avatar.buffer, req['user'].name);
+    return await this.userService.changeAvatar(avatar.buffer, req.session['user_id']);
   }
 
   @Patch('/change-name')
@@ -52,8 +53,8 @@ export class UserController {
   @Get('/get-tasks')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async getTasks(@Session() session: Record<string, any>) {
-    return await this.userService.getTasks(session.id);
+  async getTasks(@Req() req: Request) {
+    return await this.userService.getTasks(req.session['user_id']);
   }
 
   @Get('/get-user')
@@ -65,12 +66,12 @@ export class UserController {
   @Patch('/change-password')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async changePassword(@Session() session: Record<string, any>, @Body() body: ChangePasswordDto) {
+  async changePassword(@Req() req: Request, @Body() body: ChangePasswordDto) {
     const { password, confirmPassword } = body;
 
     if(password !== confirmPassword) throw new HttpException("passwords don't match.", 443);
 
-    return await this.userService.changePassword(password, session.id);
+    return await this.userService.changePassword(password, req.session['user_id']);
   }
 
   @Get('/get-avatar')
@@ -79,8 +80,14 @@ export class UserController {
   async getAvatar(
     @Query('id') id: UUID,
     @Query('time') time: Date,
-    @Res() res: Response
+    @Res({ passthrough: true }) res: Response
   ) {
     res.send(await this.userService.getAvatar(id, time));
+  }
+
+  @Post('/logout')
+  @HttpCode(200)
+  async logout(@Req() req: Request) {
+    return await this.userService.logout(req);
   }
 }

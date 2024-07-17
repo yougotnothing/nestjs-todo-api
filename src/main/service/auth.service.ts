@@ -79,10 +79,9 @@ export class AuthService {
 
     res.req.session.regenerate((err) => {
       if(err) throw new HttpException(err, 401);
-
-      res.req.session['user_id'] = user.id;
     });
-
+    
+    res.req.session['user_id'] = user.id;
     user.sessionID = res.req.session.id;
     await this.userRepository.save(user);
 

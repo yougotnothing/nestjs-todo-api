@@ -9,7 +9,7 @@ export class UserEntity {
   id: UUID;
 
   @Column("varchar", { unique: true, nullable: true })
-  sessionID: string;
+  sessionID: string | null;
 
   @Column("varchar")
   name: string;

@@ -18,10 +18,8 @@ export class MailService {
     private readonly jwtService: JwtService
   ) {}
 
-  async sendVerifyEmailMessage(token: string): Promise<void> {
-    const { sub } = await this.jwtService.verifyAsync<JwtTokenKeys>(token);
-
-    const user = await this.userRepository.findOneBy({ id: sub });
+  async sendVerifyEmailMessage(id: UUID): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id });
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -29,20 +27,20 @@ export class MailService {
       template: 'verify-email',
       context: {
         name: user.name,
-        url: `${this.configService.get<string>('API_URL')}/mail/verify-email?token=${token}`
+        url: `${this.configService.get<string>('API_URL')}/mail/verify-email?token=${user.sessionID}`
       }
     })
   }
 
-  async verifyEmail(token: string): Promise<{ user: string, message: string }> {
-    const { sub } = await this.jwtService.verifyAsync<JwtTokenKeys>(token);
-
-    const user = await this.userRepository.findOneBy({ id: sub });
+  async verifyEmail(sid: string): Promise<{ user: string, message: string }> {
+    const user = await this.userRepository.findOneBy({ sessionID: sid });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
     if(user.isVerified) return { user: user.name, message: "your email already verified." };
 
-    await this.userRepository.update(user.id, { isVerified: true });
+    user.isVerified = true;
+
+    await this.userRepository.save(user);
 
     return {
       user: user.name,

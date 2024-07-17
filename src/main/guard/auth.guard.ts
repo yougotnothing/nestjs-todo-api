@@ -7,8 +7,6 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const sid = this.extractSID(request);
 
-    console.log(sid, request.session.id);
-
     if(sid !== request.session.id) throw new HttpException(`${request.sessionID} is not equal to ${sid}`, 401);
 
     return true;

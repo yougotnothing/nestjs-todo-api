@@ -5,8 +5,8 @@ import { UserEntity } from "entity/user";
 import { TodoEntity } from "entity/todo";
 import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
-import { JwtService } from "@nestjs/jwt";
 import { UUID } from "crypto";
+import { Request } from "express";
 
 @Injectable()
 export class UserService {
@@ -17,8 +17,8 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async changeAvatar(avatar: Buffer, name: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOneBy({ name });
+  async changeAvatar(avatar: Buffer, id: UUID): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("User not found", HttpStatus.NOT_FOUND);
 
@@ -80,8 +80,8 @@ export class UserService {
     }
   }
 
-  async changePassword(password: string, name: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOneBy({ name });
+  async changePassword(password: string, id: UUID): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
     if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
@@ -100,5 +100,15 @@ export class UserService {
     console.log('time: ', time);
 
     return user.avatar;
+  }
+
+  async logout(req: Request): Promise<{ message: string }> {
+    req.session.destroy((err) => {
+      if(err) throw new HttpException(err, 401);
+    });
+
+    return {
+      message: "user logged out."
+    }
   }
 }

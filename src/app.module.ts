@@ -31,11 +31,7 @@ import { TasksModule } from 'module/tasks';
       expandVariables: true
     }),
   ],
-  controllers: [
-    AppController,
-  ],
-  providers: [
-    AppService,
-  ]
+  controllers: [AppController],
+  providers: [AppService]
 })
 export class AppModule {}
