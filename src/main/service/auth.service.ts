@@ -7,12 +7,15 @@ import { RegisterDto } from "types/register";
 import { LoginDto } from "types/login";
 import { Response } from "express";
 import { UUID } from "crypto";
+import { MailService } from "./mail.service";
+import { ChangePasswordDto } from "types/change-password";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly mailService: MailService
   ) {}
   async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
     const { email, name, password } = user_dto;
@@ -49,6 +52,8 @@ export class AuthService {
     });
 
     await this.userRepository.save(user);
+    
+    if(!user.isVerified) await this.mailService.sendVerifyEmailMessage(user.id);
 
     return {
       message: "You have been logged in.",
@@ -87,6 +92,27 @@ export class AuthService {
 
     return {
       message: "refresh success.",
+      session: user.sessionID
+    }
+  }
+
+  async restorePasswordMessage(id: UUID, res: Response): Promise<{ message: string, session: string }> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+    if(!user.isVerified) throw new HttpException("User not verified.", HttpStatus.BAD_REQUEST);
+
+    return {
+      message: "restore password success.",
+      session: user.sessionID
+    }
+  }
+
+  async restorePassword({ password, confirmPassword }: ChangePasswordDto, res: Response): Promise<{ message: string, session: string }> {
+    const user = await this.userRepository.findOneBy({ id: res.req.session['user_id'] });
+
+    return {
+      message: "restore password success.",
       session: user.sessionID
     }
   }

@@ -15,7 +15,6 @@ export class MailService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService,
-    private readonly jwtService: JwtService
   ) {}
 
   async sendVerifyEmailMessage(id: UUID): Promise<void> {
@@ -29,7 +28,7 @@ export class MailService {
         name: user.name,
         url: `${this.configService.get<string>('API_URL')}/mail/verify-email?token=${user.sessionID}`
       }
-    })
+    });
   }
 
   async verifyEmail(sid: string): Promise<{ user: string, message: string }> {
@@ -59,7 +58,9 @@ export class MailService {
       template: 'restore-password',
       context: {
         name: user.name,
-        url: `${this.configService.get<string>('API_URL')}/auth/restore-password?id=${id}`
+        url: `${this.configService.get<string>('API_URL')}/auth/restore-password-message?id=${id}`,
+        api_url: this.configService.get<string>('API_URL'),
+        id
       }
     });
   }
