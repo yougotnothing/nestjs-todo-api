@@ -9,9 +9,10 @@ import * as passport from 'passport';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.useStaticAssets(join(__dirname, 'public'));
   app.setBaseViewsDir(join(__dirname, 'main', 'views'));
   app.setViewEngine('hbs');
+
   app.use(
     cookieParser(),
     session({

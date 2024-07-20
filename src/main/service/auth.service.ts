@@ -9,6 +9,7 @@ import { Response } from "express";
 import { UUID } from "crypto";
 import { MailService } from "./mail.service";
 import { ChangePasswordDto } from "types/change-password";
+import { join } from "path";
 
 @Injectable()
 export class AuthService {
@@ -108,12 +109,14 @@ export class AuthService {
     }
   }
 
-  async restorePassword({ password, confirmPassword }: ChangePasswordDto, res: Response): Promise<{ message: string, session: string }> {
+  async restorePassword({ password, confirmPassword }: ChangePasswordDto, res: Response): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: res.req.session['user_id'] });
 
-    return {
-      message: "restore password success.",
-      session: user.sessionID
-    }
+    if(!user) return;
+    if(password.length < 8) return;
+    if(password !== confirmPassword) return;
+    if(await bcrypt.compare(password, user.password)) return;
+
+    user.password = await bcrypt.hash(password, 10);
   }
 }

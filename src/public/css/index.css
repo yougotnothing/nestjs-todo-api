@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Jost', sans-serif;
+}
+
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgb(240, 240, 240);
+	position: relative;
+	overflow: hidden;
+}
+
+.shadow {
+	z-index: 1;
+	position: absolute;
+
+	&[class*="left"] {
+		background-color: #64e;
+		box-shadow: 0 0 25rem 25rem #64e;
+		width: 1px;
+		height: 1px;
+		border-radius: 50%;
+		top: -1px;
+		left: -1px;
+	}
+
+	&[class*="right"] {
+		background-color: #644bc7;
+		box-shadow: 0 0 27rem 23rem #644bc7;
+		width: 12px;
+		height: 120px;
+		border-radius: 50%;
+		top: 40%;
+		right: -12px;
+	}
+}
+
+.button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background-color: #64e;
+	color: white;
+	font-size: 1.2rem;
+	font-weight: bold;
+	width: 90%;
+	font-family: 'Jost', sans-serif;
+	border: none;
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+
+	&:hover {
+		background-color: #644bc7;
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
+
+	&[disabled] {
+		background-color: #ccc;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+}

@@ -5,6 +5,7 @@ import { LoginDto } from "types/login";
 import { Response } from "express";
 import { UUID } from "crypto";
 import { ChangePasswordDto } from "types/change-password";
+import { join } from "path";
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +37,7 @@ export class AuthController {
   @Get('/restore-password-message')
   @HttpCode(200)
   @Render('restore-password-message')
-  async restorePasswordMessage() {
+  async restorePasswordMessage(@Res({ passthrough: true }) res: Response) {
     return {
       message: "page rendered."
     }
