@@ -1,8 +1,56 @@
-<h1>Hello {{ name }}</h1>
-<p>Please verify your email by clicking the link below:</p>
-<p>
-  <a href="{{ url }}">Verify your email</a>
-</p>
-<p>If you didn't request this email, please ignore this message.</p>
-<p>Thank you!</p>
-<p>The Team</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Jost', sans-serif;
+    }
+    .container {
+      display: block;
+      width: 340px;
+      margin: 0 auto;
+      background-color: white;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    p {
+      font-size: 14px;
+      font-weight: 400;
+    }
+    a {
+      font-size: 14px;
+      font-weight: 400;
+      display: block;
+      text-align: center;
+      padding: 9px 18px;
+      border-radius: 18px;
+      background-color: #64e;
+      outline: none;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hello {{ name }}</h1>
+    <p>Please verify your email by clicking the link below:</p>
+    <a href="{{ url }}">Verify your email</a>
+    <p>
+      If you didn't request this email, please ignore this message.<br>
+      Thank you!<br>
+      The Team
+    </p>
+  </div>
+</body>
+</html>

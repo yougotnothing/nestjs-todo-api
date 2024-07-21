@@ -16,6 +16,13 @@ body {
 	background-color: rgb(240, 240, 240);
 	position: relative;
 	overflow: hidden;
+
+	&[class*="email"] {
+		display: block;
+		width: 340px;
+		margin: 0 auto;
+		background-color: white;
+	}
 }
 
 .shadow {

@@ -1,0 +1,30 @@
+h1 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+p {
+	font-size: 14px;
+	font-weight: 400;
+}
+
+a {
+	display: block;
+	align-items: center;
+	justify-content: center;
+	padding: 9px 18px;
+	border-radius: 18px;
+	background-color: #64e;
+	outline: none;
+	color: white;
+	text-decoration: none;
+	transition: all 0.3s ease-in-out;
+
+	&:hover {
+		background-color: #644bc7;
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
+}

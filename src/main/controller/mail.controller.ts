@@ -16,10 +16,9 @@ export class MailController {
   }
 
   @Post('/send-verify-email-message')
-  @UseGuards(AuthGuard)
   @HttpCode(200)
-  async sendVerifyEmailMessage(@Req() req: Request) {
-    return await this.mailService.sendVerifyEmailMessage(req.session['user_id']);
+  async sendVerifyEmailMessage(@Query('id') id: UUID) {
+    return await this.mailService.sendVerifyEmailMessage(id);
   }
 
   @Post('/send-restore-password-email-message')
