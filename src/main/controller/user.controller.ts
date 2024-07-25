@@ -25,6 +25,7 @@ import { MulterFile } from "types/multer-file";
 import { UUID } from "crypto";
 import { ChangePasswordDto } from "types/change-password";
 import { Request } from "express";
+import { SessionID } from "decorator/sessionid";
 
 @Controller('user')
 export class UserController {
@@ -53,8 +54,8 @@ export class UserController {
   @Get('/get-tasks')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async getTasks(@Req() req: Request) {
-    return await this.userService.getTasks(req.session['user_id']);
+  async getTasks(@SessionID() id: UUID) {
+    return await this.userService.getTasks(id);
   }
 
   @Get('/get-user')
@@ -86,6 +87,7 @@ export class UserController {
   }
 
   @Post('/logout')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async logout(@Req() req: Request) {
     return await this.userService.logout(req);

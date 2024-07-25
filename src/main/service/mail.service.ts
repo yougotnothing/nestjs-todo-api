@@ -4,8 +4,6 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "entity/user";
 import { Repository } from "typeorm";
-import { JwtService } from "@nestjs/jwt";
-import { JwtTokenKeys } from "types/jwt-token-keys";
 import { UUID } from "crypto";
 
 @Injectable()
@@ -19,6 +17,8 @@ export class MailService {
 
   async sendVerifyEmailMessage(id: UUID): Promise<void> {
     const user = await this.userRepository.findOneBy({ id });
+
+    if(user.isVerified) return;
 
     await this.mailerService.sendMail({
       to: user.email,

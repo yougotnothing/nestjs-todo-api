@@ -103,6 +103,14 @@ export class UserService {
   }
 
   async logout(req: Request): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ sessionID: req.sessionID });
+
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+
+    user.sessionID = null;
+
+    await this.userRepository.save(user);
+
     req.session.destroy((err) => {
       if(err) throw new HttpException(err, 401);
     });

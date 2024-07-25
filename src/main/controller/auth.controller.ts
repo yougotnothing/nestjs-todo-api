@@ -1,11 +1,12 @@
-import { Body, Controller, Get, HttpCode, Patch, Post, Query, Render, Res } from "@nestjs/common"; 
+import { Body, Controller, Get, HttpCode, Patch, Post, Render, Res, UseGuards } from "@nestjs/common"; 
 import { AuthService } from "service/auth";
 import { RegisterDto } from "types/register";
 import { LoginDto } from "types/login";
 import { Response } from "express";
 import { UUID } from "crypto";
 import { ChangePasswordDto } from "types/change-password";
-import { join } from "path";
+import { SessionID } from "decorator/sessionid";
+import { AuthGuard } from "guard/auth";
 
 @Controller('auth')
 export class AuthController {
@@ -44,8 +45,12 @@ export class AuthController {
   }
 
   @Post('/restore-password')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
-  async restorePassword(@Body() body: ChangePasswordDto, @Res({ passthrough: true }) res: Response) {
-    return await this.authService.restorePassword(body, res);
+  async restorePassword(
+    @Body() body: ChangePasswordDto,
+    @SessionID() id: UUID
+  ) {
+    return await this.authService.restorePassword(body, id);
   }
 }

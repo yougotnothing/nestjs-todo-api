@@ -7,18 +7,16 @@ import { RegisterDto } from "types/register";
 import { LoginDto } from "types/login";
 import { Response } from "express";
 import { UUID } from "crypto";
-import { MailService } from "./mail.service";
 import { ChangePasswordDto } from "types/change-password";
-import { join } from "path";
+import { SessionRequest } from "types/session-request";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    private readonly mailService: MailService
+    private readonly userRepository: Repository<UserEntity>
   ) {}
-  async registration(user_dto: RegisterDto): Promise<{ status: number, message: string }> {
+  async registration(user_dto: RegisterDto): Promise<{ message: string }> {
     const { email, name, password } = user_dto;
     const isUserCreated = await this.userRepository.findOneBy({ name, email });
     const user = new UserEntity();
@@ -34,12 +32,11 @@ export class AuthService {
     this.userRepository.save(user);
 
     return {
-      status: 200,
       message: 'you have been registered!'
     }
   }
 
-  async login({ login, password }: LoginDto, res: Response): Promise<{ message: string, session: string }> {
+  async login({ login, password }: LoginDto, res: Response): Promise<SessionRequest> {
     const user = await this.validateUser({ login, password });
 
     res.req.session['user_id'] = user.id;
@@ -53,8 +50,6 @@ export class AuthService {
     });
 
     await this.userRepository.save(user);
-    
-    if(!user.isVerified) await this.mailService.sendVerifyEmailMessage(user.id);
 
     return {
       message: "You have been logged in.",
@@ -78,7 +73,7 @@ export class AuthService {
     return user;
   }
 
-  async refresh(res: Response): Promise<{ message: string, session: string }> {
+  async refresh(res: Response): Promise<SessionRequest> {
     const user = await this.userRepository.findOneBy({ id: res.req.session['user_id'] });
 
     if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
@@ -93,11 +88,11 @@ export class AuthService {
 
     return {
       message: "refresh success.",
-      session: user.sessionID
+      session: res.req.sessionID
     }
   }
 
-  async restorePasswordMessage(id: UUID, res: Response): Promise<{ message: string, session: string }> {
+  async restorePasswordMessage(id: UUID): Promise<SessionRequest> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
@@ -109,13 +104,13 @@ export class AuthService {
     }
   }
 
-  async restorePassword({ password, confirmPassword }: ChangePasswordDto, res: Response): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: res.req.session['user_id'] });
+  async restorePassword({ password, confirmPassword }: ChangePasswordDto, id: UUID): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id });
 
-    if(!user) return;
-    if(password.length < 8) return;
-    if(password !== confirmPassword) return;
-    if(await bcrypt.compare(password, user.password)) return;
+    if(!user) console.log('user not found.');
+    if(password.length < 8) console.log('password must be less than 8 characters.');
+    if(password !== confirmPassword) console.log('passwords don\'t match.');
+    if(await bcrypt.compare(password, user.password)) console.log('password is same.');
 
     user.password = await bcrypt.hash(password, 10);
   }

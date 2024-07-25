@@ -1,8 +1,6 @@
 import { Controller, Get, HttpCode, Post, Query, Render, Req, UseGuards } from "@nestjs/common";
 import { UUID } from "crypto";
-import { AuthGuard } from "guard/auth";
 import { MailService } from "service/mail";
-import { Request } from "express";
 
 @Controller('mail')
 export class MailController {
