@@ -104,7 +104,7 @@ export class AuthService {
     }
   }
 
-  async restorePassword({ password, confirmPassword }: ChangePasswordDto, id: UUID): Promise<void> {
+  async restorePassword({ password, confirmPassword }: ChangePasswordDto, id: UUID): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) console.log('user not found.');
@@ -113,5 +113,9 @@ export class AuthService {
     if(await bcrypt.compare(password, user.password)) console.log('password is same.');
 
     user.password = await bcrypt.hash(password, 10);
+
+    return {
+      message: "password changed."
+    }
   }
 }

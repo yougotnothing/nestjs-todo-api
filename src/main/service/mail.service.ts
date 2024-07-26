@@ -47,7 +47,7 @@ export class MailService {
     }
   }
 
-  async sendRestorePasswordEmailMessage(id: UUID): Promise<void> {
+  async sendRestorePasswordEmailMessage(id: UUID): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ id });
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
@@ -58,10 +58,12 @@ export class MailService {
       template: 'restore-password',
       context: {
         name: user.name,
-        url: `${this.configService.get<string>('API_URL')}/auth/restore-password-message?id=${id}`,
-        api_url: this.configService.get<string>('API_URL'),
-        id
+        url: `${this.configService.get<string>('API_URL')}/auth/restore-password-message?id=${user.id}`,
       }
     });
+
+    return {
+      message: "Restore password message sent. \n Please check your email."
+    }
   }
 }

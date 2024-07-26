@@ -45,7 +45,6 @@ export class AuthController {
   }
 
   @Post('/restore-password')
-  @UseGuards(AuthGuard)
   @HttpCode(200)
   async restorePassword(
     @Body() body: ChangePasswordDto,
