@@ -17,8 +17,8 @@ export class TodoEntity {
   @Column("varchar")
   createdAt: string;
 
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: UUID;
 
   @Column("enum", { enum: TodoTypeEnum })
   type: TodoType;

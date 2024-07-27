@@ -20,6 +20,8 @@ import { TodoType } from "types/todo";
 import { AuthGuard } from "guard/auth";
 import { CreateTodoDto } from "types/create-todo";
 import { Request } from "express";
+import { SessionID } from "decorator/sessionid";
+import { UUID } from "crypto";
 
 @Controller('tasks')
 export class TasksController {
@@ -39,14 +41,14 @@ export class TasksController {
   @Patch('/change-header')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async changeHeader(@Body() body: { id: number, header: string }) {
+  async changeHeader(@Body() body: { id: UUID, header: string }) {
     return await this.tasksService.changeHeader({ ...body });
   }
 
   @Delete('/delete-task')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async deleteTask(@Query('id') id: number) {
+  async deleteTask(@Query('id') id: UUID) {
     const todo = await this.todoRepository.findOneBy({ id });
 
     if(!todo) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
@@ -102,6 +104,7 @@ export class TasksController {
   }
 
   @Get('/week-tasks')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getWeekTasks(@Query('week') week: string) {
     return await this.tasksService.getTasksByWeek(week);
@@ -115,8 +118,27 @@ export class TasksController {
   }
 
   @Get('/important-tasks')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async getImportantTasks(@Req() req: Request) {
     return await this.tasksService.getImportantTasks(req.session['user_id']);
+  }
+
+  @Get('/done-tasks')
+  @UseGuards(AuthGuard)
+  @HttpCode(200)
+  async getDoneTasks(@SessionID() id: UUID) {
+    return await this.tasksService.getDoneTasks(id);
+  }
+
+  @Patch('/done')
+  @UseGuards(AuthGuard)
+  @HttpCode(200)
+  async changeDone(
+    @Body("isChecked") isChecked: boolean,
+    @Query("id") id: UUID,
+    @Req() req: Request
+  ) {
+    return await this.tasksService.changeDone(isChecked, id, req.session['user_id']);
   }
 }

@@ -35,7 +35,7 @@ export class TasksService {
     }
   }
 
-  async deleteTask(id: number): Promise<{ message: string }> {
+  async deleteTask(id: UUID): Promise<{ message: string }> {
     const task = await this.todoRepository.findOneBy({ id });
 
     if(!task) return { message: "task not found." }
@@ -47,7 +47,7 @@ export class TasksService {
     }
   }
 
-  async changeHeader(body: { id: number, header: string }): Promise<{ message: string }> {
+  async changeHeader(body: { id: UUID, header: string }): Promise<{ message: string }> {
     const task = await this.todoRepository.findOneBy({ id: body.id });
 
     if(!task) return { message: "task not found." }
@@ -192,6 +192,36 @@ export class TasksService {
     return {
       message: "important tasks:",
       tasks: tasks
+    }
+  }
+
+  async getDoneTasks(id: UUID): Promise<{ message: string, tasks: TodoEntity[] }> {
+    const tasks = await this.todoRepository.findBy({ isChecked: true, creator: id });
+
+    if(!tasks.length) {
+      return {
+        message: "user has no done tasks.",
+        tasks: []
+      }
+    }
+
+    return {
+      message: "done tasks:",
+      tasks: tasks
+    }
+  }
+
+  async changeDone(isChecked: boolean, id: UUID, creator: UUID): Promise<{ message: string }> {
+    const task = await this.todoRepository.findOneBy({ id, creator });
+
+    if(!task) throw new HttpException("task not found.", HttpStatus.NOT_FOUND);
+
+    task.isChecked = isChecked;
+
+    await this.todoRepository.save(task);
+
+    return {
+      message: "done changed."
     }
   }
 }
