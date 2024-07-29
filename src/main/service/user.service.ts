@@ -75,7 +75,8 @@ export class UserService {
         name: user.name,
         email: user.email,
         avatar: `${process.env.API_URL}/user/get-avatar?id=${user.id}`,
-        id: user.id
+        id: user.id,
+        isVerified: user.isVerified
       }
     }
   }

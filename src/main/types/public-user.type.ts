@@ -4,4 +4,5 @@ export interface PublicUserDto {
   email: string;
   avatar: string;
   id: string;
+  isVerified: boolean;
 }

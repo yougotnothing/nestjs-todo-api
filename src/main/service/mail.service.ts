@@ -15,10 +15,10 @@ export class MailService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async sendVerifyEmailMessage(id: UUID): Promise<void> {
+  async sendVerifyEmailMessage(id: UUID): Promise<{ message: string }> {
     const user = await this.userRepository.findOneBy({ id });
 
-    if(user.isVerified) return;
+    if(user.isVerified) return { message: "your email already verified." };
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -29,6 +29,10 @@ export class MailService {
         url: `${this.configService.get<string>('API_URL')}/mail/verify-email?token=${user.sessionID}`
       }
     });
+
+    return {
+      message: "Verify email message sent. \n Please check your email."
+    }
   }
 
   async verifyEmail(sid: string): Promise<{ user: string, message: string }> {
