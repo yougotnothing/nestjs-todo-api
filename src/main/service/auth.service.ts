@@ -9,6 +9,7 @@ import { Response } from "express";
 import { UUID } from "crypto";
 import { ChangePasswordDto } from "types/change-password";
 import { SessionRequest } from "types/session-request";
+import { emailRegExp } from "utils/email";
 
 @Injectable()
 export class AuthService {
@@ -58,10 +59,9 @@ export class AuthService {
   }
 
   async validateUser({ login, password }: LoginDto): Promise<UserEntity> {
-    const regex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     let user: UserEntity;
 
-    if(regex.test(login)) {
+    if(emailRegExp.test(login)) {
       user = await this.userRepository.findOneBy({ email: login });
     }else{
       user = await this.userRepository.findOneBy({ name: login });

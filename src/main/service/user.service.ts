@@ -7,6 +7,8 @@ import { PublicUserDto } from "types/public-user";
 import * as bcrypt from "bcrypt";
 import { UUID } from "crypto";
 import { Request } from "express";
+import { emailRegExp } from "utils/email";
+import { MailService } from "./mail.service";
 
 @Injectable()
 export class UserService {
@@ -15,6 +17,7 @@ export class UserService {
     private readonly todoRepository: Repository<TodoEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly mailService: MailService
   ) {}
 
   async changeAvatar(avatar: Buffer, id: UUID): Promise<{ message: string }> {
@@ -118,6 +121,26 @@ export class UserService {
 
     return {
       message: "user logged out."
+    }
+  }
+
+  async changeEmail(newEmail: string, id: UUID): Promise<{ message: string }> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
+    if(newEmail === user.email) throw new HttpException("Email can't be same.", 440);
+    if(newEmail.length < 3) throw new HttpException("Email must be less than 3 characters.", 441);
+    if(!emailRegExp.test(newEmail)) throw new HttpException("Email is invalid.", 442);
+
+    user.email = newEmail;
+    user.isVerified = false;
+
+    await this.userRepository.save(user);
+
+    await this.mailService.sendVerifyEmailMessage(user.id);
+
+    return {
+      message: "email changed."
     }
   }
 }

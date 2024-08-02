@@ -27,6 +27,7 @@
       "mail/*": ["src/main/mail/*.hbs"],
       "decorator/*": ["src/main/decorator/*.decorator"],
       "strategy/*": ["src/main/strategy/*.strategy"],
+      "utils/*": ["src/main/utils/*.regexp"]
     }
   }
 }
