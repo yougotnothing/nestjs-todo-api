@@ -92,4 +92,11 @@ export class UserController {
   async logout(@Req() req: Request) {
     return await this.userService.logout(req);
   }
+
+  @Post('/change-email')
+  @UseGuards(AuthGuard)
+  @HttpCode(200)
+  async changeEmail(@Body("newEmail") newEmail: string, @SessionID() id: UUID) {
+    return await this.userService.changeEmail(newEmail, id);
+  }
 }
