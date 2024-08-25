@@ -14,7 +14,6 @@ import {
   Res,
   UseGuards,
   Header,
-  Session
 } from "@nestjs/common";
 import { UserService } from "service/user";
 import { AuthGuard } from "guard/auth";
@@ -44,11 +43,8 @@ export class UserController {
   @Patch('/change-name')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async changeName(
-    @Body("newName") newName: string,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    return await this.userService.changeName(newName, res.req.session['user_id']);
+  async changeName(@Body("newName") newName: string, @SessionID() id: UUID) {
+    return await this.userService.changeName(newName, id);
   }
 
   @Get('/get-tasks')
@@ -67,12 +63,12 @@ export class UserController {
   @Patch('/change-password')
   @UseGuards(AuthGuard)
   @HttpCode(200)
-  async changePassword(@Req() req: Request, @Body() body: ChangePasswordDto) {
+  async changePassword(@SessionID() id: UUID, @Body() body: ChangePasswordDto) {
     const { password, confirmPassword } = body;
 
     if(password !== confirmPassword) throw new HttpException("passwords don't match.", 443);
 
-    return await this.userService.changePassword(password, req.session['user_id']);
+    return await this.userService.changePassword(password, id);
   }
 
   @Get('/get-avatar')
