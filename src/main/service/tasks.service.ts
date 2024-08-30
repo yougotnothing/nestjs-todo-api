@@ -27,6 +27,7 @@ export class TasksService {
     task_.from = task.from;
     task_.till = task.till;
     task_.important = task.important;
+    task_.tasks = task.tasks;
 
     await this.todoRepository.save(task_);
 

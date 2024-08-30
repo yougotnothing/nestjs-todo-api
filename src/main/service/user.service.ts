@@ -89,7 +89,7 @@ export class UserService {
 
     if(!user) throw new HttpException("user not found.", HttpStatus.NOT_FOUND);
     if(password.length > 8) throw new HttpException("Password must be less than 8 characters.", 440);
-    if(!await bcrypt.compare(password, user.password)) throw new HttpException("Passwords don't match.", 443);
+    if(await bcrypt.compare(password, user.password)) throw new HttpException("Passwords are same.", 443);
 
     await this.userRepository.update(user.id, { password: await bcrypt.hash(password, 10) });
 
